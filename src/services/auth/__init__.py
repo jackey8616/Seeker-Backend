@@ -68,6 +68,6 @@ class AuthService:
             "httponly": True,
             "secure": True,
             "samesite": "none",
-            "domain": "localhost",
+            "domain": "clo5de.info",
             "max_age": time_diff_in_seconds(datetime.now(), refresh_token_expiration),
         }

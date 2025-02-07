@@ -12,6 +12,8 @@ def create_app(title: str = "Seeker-Backend") -> FastAPI:
     origins = [
         "https://localhost:8080",
         "https://localhost:5173",
+        "https://seeker.clo5de.info",
+        "https://seeker-backend.clo5de.info",
     ]
 
     app = FastAPI(title=title)
