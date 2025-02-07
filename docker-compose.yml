@@ -1,8 +1,16 @@
 version: "3"
 
 services:
-  mongodb:
-    container_name: mongodb
-    image: mongo:8.0.4
-    ports:
-      - 17031:27017
+  # mongodb:
+  #   container_name: mongodb
+  #   image: mongo:8.0.4
+  #   ports:
+  #     - 17031:27017
+  # host:
+  #   image: seeker-image:test
+  #   ports:
+  #     - 8090:8090
+  #   volumes:
+  #     - ./.env.local:/app/.env
+  #     - ./localhost+2-key.pem:/app/localhost+2-key.pem
+  #     - ./localhost+2.pem:/app/localhost+2.pem

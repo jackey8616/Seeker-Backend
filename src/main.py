@@ -48,6 +48,6 @@ if __name__ == "__main__":
         app=create_app(),
         host="0.0.0.0",
         port=int(di["PORT"]),
-        ssl_keyfile="./localhost+2-key.pem",
-        ssl_certfile="./localhost+2.pem",
+        ssl_keyfile=di["SSL_KEY_FILE_PATH"],
+        ssl_certfile=di["SSL_CERT_FILE_PATH"],
     )
