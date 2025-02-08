@@ -9,7 +9,7 @@ class GoogleCredentialsTransformer:
     def transform(self, data: GoogleOAuthCredentials) -> GoogleCredentials:
         assert data.token is not None
         assert data.refresh_token is not None
-        assert data.expired is not None
+        assert data.expiry is not None
 
         return GoogleCredentials(
             token=data.token,

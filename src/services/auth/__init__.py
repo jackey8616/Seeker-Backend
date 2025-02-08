@@ -3,6 +3,7 @@ from datetime import datetime
 
 from kink import di
 
+from dtos.auth.token import TokenData
 from models.user import User
 from repository.user import UserRepository
 from services.auth.jwt import JwtService
@@ -18,9 +19,7 @@ class AuthService:
     _user_repository: UserRepository = field(default_factory=lambda: di[UserRepository])
     _jwt_service: JwtService = field(default_factory=lambda: JwtService())
 
-    def oauth_login(
-        self, code: str, redirect_uri: str
-    ) -> tuple[str, str, str, datetime]:
+    def oauth_login(self, code: str, redirect_uri: str) -> tuple[str, str, datetime]:
         (oauth_credentials, credentials) = (
             self._google_oauth_service.exchange_oauth_token(
                 code=code, redirect_uri=redirect_uri
@@ -40,15 +39,20 @@ class AuthService:
             )
 
         assert user.id is not None
-        payload = {"sub": user.id}
-        (access_token, _) = self._jwt_service.create_access_token(data=payload)
-        (refresh_token, refresh_token_expiration) = (
-            self._jwt_service.create_refresh_token(data=payload)
+        payload = TokenData(sub=user.id)
+        (access_token, _) = self._jwt_service.create_access_token(
+            data=payload.model_dump()
         )
-        return (user.id, access_token, refresh_token, refresh_token_expiration)
+        (refresh_token, refresh_token_expiration) = (
+            self._jwt_service.create_refresh_token(data=payload.model_dump())
+        )
+        return (access_token, refresh_token, refresh_token_expiration)
 
     def jwt_refresh(self, token: str) -> tuple[str, str, datetime]:
         payload = self._jwt_service.decode_token(token=token)
+        if isinstance(payload, Exception):
+            raise payload
+
         user_id = payload["sub"]
         if user_id is None:
             raise ValueError("Incorrect payload")

@@ -10,7 +10,7 @@ from kink import di
 class JwtService:
     _algorithm: str = field(default="HS256", repr=False)
     _jwt_secret: str = field(default_factory=lambda: di["JWT_SECRET"], repr=False)
-    _access_token_timedelta: timedelta = timedelta(seconds=30)
+    _access_token_timedelta: timedelta = timedelta(minutes=30)
     _refresh_token_timedelta: timedelta = timedelta(days=30)
 
     def _create_token(
@@ -36,5 +36,8 @@ class JwtService:
             data=data, expires_delta=self._refresh_token_timedelta
         )
 
-    def decode_token(self, token: str) -> dict:
-        return decode(token, self._jwt_secret, algorithms=[self._algorithm])
+    def decode_token(self, token: str) -> dict | Exception:
+        try:
+            return decode(token, self._jwt_secret, algorithms=[self._algorithm])
+        except Exception as e:
+            return e

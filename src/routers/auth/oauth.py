@@ -43,16 +43,12 @@ async def google_oauth_code_verify(request: Request):
     code = json_data["code"]
 
     service = di[AuthService]
-    (user_id, access_token, refresh_token, refresh_token_expiration) = (
-        service.oauth_login(
-            code=code,
-            redirect_uri=get_verify_path(),
-        )
+    (access_token, refresh_token, refresh_token_expiration) = service.oauth_login(
+        code=code,
+        redirect_uri=get_verify_path(),
     )
 
-    response = GoogleOAuthVerifyResponseDto(
-        user_id=user_id, access_token=access_token
-    ).response()
+    response = GoogleOAuthVerifyResponseDto(access_token=access_token).response()
     response.set_cookie(
         **service.get_refresh_token_cookie_config(
             refresh_token=refresh_token,
