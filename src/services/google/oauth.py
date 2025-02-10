@@ -1,12 +1,14 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
+from google.auth.external_account_authorized_user import Credentials as extCredentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from kink import di
 
 from dtos.google.credentials import GoogleCredentials
 from dtos.google.userinfo import GoogleUserInfo
+from repository.user import UserRepository
 from transformers.auth.google_credentials import GoogleCredentialsTransformer
 from utils.typings import GoogleOAuthCredentials
 
@@ -67,3 +69,19 @@ class GoogleOAuthService:
     def get_userinfo(self, credentials: GoogleOAuthCredentials) -> GoogleUserInfo:
         service = self._build_service(credentials=credentials)
         return GoogleUserInfo.model_validate(service.userinfo().get().execute())
+
+    def get_oauth_credentials(self, user_id: str) -> GoogleOAuthCredentials:
+        user_repository = di[UserRepository]
+        user = user_repository.get_by_id(id=user_id)
+
+        if user is None:
+            raise ValueError(f"Could not find user with id: {user_id}")
+
+        flow = self._get_oauth_flow()
+        info = {
+            "client_id": flow.client_config["client_id"],
+            "client_secret": flow.client_config["client_secret"],
+            "token_url": flow.client_config["token_uri"],
+        } | user.google_credentials.model_dump(mode="json")
+
+        return extCredentials.from_info(info=info)
