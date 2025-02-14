@@ -20,6 +20,8 @@ def bootstrap_di(dotenv_path: str = ".env"):
     di["GOOGLE_OAUTH_CLIENT_CREDENTIALS_PATH"] = getenv(
         "GOOGLE_OAUTH_CLIENT_CREDENTIALS_PATH"
     )
+    di["GOOGLE_GCP_PROJECT_ID"] = getenv("GOOGLE_GCP_PROJECT_ID")
+    di["GOOGLE_GCP_REGION"] = getenv("GOOGLE_GCP_REGION")
 
     di[UserRepository] = UserRepository()
     di[GoogleOAuthService] = GoogleOAuthService()

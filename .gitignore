@@ -2,6 +2,7 @@ __pycache__/
 mongo-data/
 
 .env
+.env.local
 *.pyc
 *.pem
 *credentials.json

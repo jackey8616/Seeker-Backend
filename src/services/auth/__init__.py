@@ -32,7 +32,7 @@ class AuthService:
         user = self._user_repository.get_by_google_id(google_id=userinfo.id)
         if user is None:
             user = self._user_repository.insert_one(
-                user=User(
+                obj=User(
                     google_userinfo=userinfo,
                     google_credentials=credentials,
                 )
