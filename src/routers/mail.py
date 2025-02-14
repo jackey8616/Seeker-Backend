@@ -69,6 +69,7 @@ async def mail_fitness_by_ai(
     result = pipeline.execute()(
         {
             "thread": thread,
+            "executor_id": user_id,
             "restriction": restriction,
             "resume": resume,
         }

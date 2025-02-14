@@ -8,6 +8,7 @@ from models import MongoDocument
 
 
 class AiConversationLog(MongoDocument):
+    executor_id: str
     model_name: str
     system_instruction: list[str]
     chats: list[AiChatLog]

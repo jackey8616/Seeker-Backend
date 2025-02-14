@@ -1,3 +1,5 @@
+from typing import Optional
+
 from bson import ObjectId
 
 from models.ai_conversation_log import AiConversationLog
@@ -8,6 +10,19 @@ class AiConversationLogRepository(Repository[AiConversationLog]):
     @property
     def _table_name(self) -> str:
         return "ai_conversation_logs"
+
+    def get_by_executor_id_and_id(
+        self, id: str, executor_id: str
+    ) -> Optional[AiConversationLog]:
+        raw_document = self._table.find_one(
+            {
+                "_id": ObjectId(id),
+                "executor_id": executor_id,
+            }
+        )
+        if raw_document is None:
+            return None
+        return AiConversationLog.model_validate(obj=raw_document)
 
     def update(self, ai_conversation_log: AiConversationLog):
         self._table.find_one_and_update(

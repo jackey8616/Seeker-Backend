@@ -22,6 +22,7 @@ class GoogleVertexService:
 
     def start_chat(
         self,
+        executor_id: str,
         model_name: str,
         system_instructions: list[str],
     ) -> str:
@@ -34,6 +35,7 @@ class GoogleVertexService:
         model.start_chat()
         conversation_log = self._log_repository.insert_one(
             obj=AiConversationLog(
+                executor_id=executor_id,
                 model_name=model_name,
                 system_instruction=system_instructions,
                 chats=[],
@@ -47,13 +49,16 @@ class GoogleVertexService:
 
     def chat(
         self,
+        executor_id: str,
         id: str,
         content: str,
         model_name: Optional[str] = None,
         system_instructions: Optional[list[str]] = None,
         with_history: bool = True,
     ) -> AiChatLog:
-        conversation_log = self._log_repository.get_by_id(id=id)
+        conversation_log = self._log_repository.get_by_executor_id_and_id(
+            executor_id=executor_id, id=id
+        )
         if conversation_log is None:
             raise ValueError("Conversation not exists")
 

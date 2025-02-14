@@ -6,6 +6,7 @@ from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
 
 
 class MatchResumeAndJobDescriptionDataType(StepDataType):
+    executor_id: str
     resume: str
     restriction: str
     crawled_details: list[CrawlDetail]
@@ -19,12 +20,14 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
         next: NextStep,
         final: FinalStep,
     ):
+        executor_id = data.executor_id
         resume = data.resume
         restriction = data.restriction
         crawled_details = data.crawled_details
 
         vertex_service = GoogleVertexService()
         conversation_id = vertex_service.start_chat(
+            executor_id=executor_id,
             model_name="gemini-1.5-pro",
             system_instructions=[
                 "You are a professional job matcher",
@@ -53,6 +56,7 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
         for detail in crawled_details:
             job_description = detail.model_dump()
             chat_log = vertex_service.chat(
+                executor_id=executor_id,
                 id=conversation_id,
                 content=f"<JOB_DESCRIPTION>{job_description}</JOB_DESCRIPTION>",
                 with_history=False,
