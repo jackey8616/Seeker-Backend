@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 from dtos.auth.token import TokenData
 from dtos.responses.mail.get_mail import GetMailResponseDto
@@ -6,6 +8,7 @@ from dtos.responses.mail.list_mails import ListMailInfosResponseDto
 from services.auth.auth_bearer import JwtBearer
 from services.google.mail import GoogleMailService
 from services.google.oauth import GoogleOAuthService
+from services.pipeline.flow.seek_au import SeekAuPipeline
 from transformers.mail import MailTransformer
 from transformers.mail.mail_info import MailInfoTransformer
 
@@ -35,7 +38,9 @@ async def list_mails(token_data: TokenData = Depends(JwtBearer(TokenData))):
 
 
 @mails_router.get("/{thread_id}")
-async def get_mail(thread_id, token_data: TokenData = Depends(JwtBearer(TokenData))):
+async def get_mail(
+    thread_id: str, token_data: TokenData = Depends(JwtBearer(TokenData))
+):
     user_id = token_data.sub
     oauth_credentials = GoogleOAuthService().get_oauth_credentials(user_id=user_id)
     thread = GoogleMailService().get_thread(
@@ -43,3 +48,37 @@ async def get_mail(thread_id, token_data: TokenData = Depends(JwtBearer(TokenDat
     )
     mail = MailTransformer().transform(data=thread)
     return GetMailResponseDto(mail=mail).response()
+
+
+@mails_router.post("/fitness_by_ai/{thread_id}")
+async def mail_fitness_by_ai(
+    thread_id: str,
+    request: Request,
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
+):
+    user_id = token_data.sub
+    json_data = await request.json()
+    restriction = json_data["restriction"]
+    resume = json_data["resume"]
+
+    oauth_credentials = GoogleOAuthService().get_oauth_credentials(user_id=user_id)
+    thread = GoogleMailService().get_thread(
+        credentials=oauth_credentials, thread_id=thread_id
+    )
+    pipeline = SeekAuPipeline()
+    result = pipeline.execute()(
+        {
+            "thread": thread,
+            "restriction": restriction,
+            "resume": resume,
+        }
+    )
+    assert isinstance(result, dict)
+
+    return JSONResponse(
+        content=jsonable_encoder(
+            {
+                "result": result["fitnesses"],
+            }
+        )
+    )

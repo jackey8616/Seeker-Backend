@@ -30,7 +30,7 @@ class Repository(ABC, Generic[T]):
         if raw_document is None:
             return None
 
-        origin_bases = cast(list, self.__orig_bases__) or []
+        origin_bases = cast(list, getattr(self, "__orig_bases__")) or []  # noqa: B009
         generic_types = get_args(origin_bases[0])
         generic_type = generic_types[0]
         return TypeAdapter(type=generic_type).validate_python(raw_document)
