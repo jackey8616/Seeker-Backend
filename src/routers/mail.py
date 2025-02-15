@@ -50,8 +50,8 @@ async def get_mail(
     return GetMailResponseDto(mail=mail).response()
 
 
-@mails_router.post("/fitness_by_ai/{thread_id}")
-async def mail_fitness_by_ai(
+@mails_router.post("/fitting_by_ai/{thread_id}")
+async def mail_fitting_by_ai(
     thread_id: str,
     request: Request,
     token_data: TokenData = Depends(JwtBearer(TokenData)),
@@ -84,7 +84,7 @@ async def mail_fitness_by_ai(
     return JSONResponse(
         content=jsonable_encoder(
             {
-                "result": result["fitnesses"],
+                "result": result["fitting_result"],
             }
         )
     )
