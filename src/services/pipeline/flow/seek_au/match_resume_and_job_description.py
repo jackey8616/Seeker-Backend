@@ -36,25 +36,24 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
                 "last score a positive number(max 100, min 0) of the fitness.",
                 "Here is the resume and restrictions:",
                 f"<RESUME>{resume}</RESUME>",
-                f"<RESTRICTIONS>{restriction}</RESTRICTIONS",
-                """
-                <FORMAT>
-                # Job Summarize
-                ... this is job summarize ...
-
-                # Fitness
-                ... Positive comment ...
-                ... Negative comment ...
-
-                # Fitness Score
-                N/100 (N is positive number from 0 up to 100)
-                </FORMAT>""",
+                f"<RESTRICTIONS>{restriction}</RESTRICTIONS>",
+                "<FORMAT>",
+                "Summarize",
+                "... this is job summarize ...",
+                "",
+                "# Fitness",
+                "... Positive comment ...",
+                "... Negative comment ...",
+                "",
+                "# Fitness Score",
+                "N/100 (N is positive number from 0 up to 100)",
+                "</FORMAT>",
             ],
         )
 
         job_fitnesses = []
         for detail in crawled_details:
-            job_description = detail.model_dump()
+            job_description = detail.model_dump_json()
             chat_log = vertex_service.chat(
                 executor_id=executor_id,
                 id=conversation_id,

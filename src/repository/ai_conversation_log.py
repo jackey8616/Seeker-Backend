@@ -24,6 +24,13 @@ class AiConversationLogRepository(Repository[AiConversationLog]):
             return None
         return AiConversationLog.model_validate(obj=raw_document)
 
+    def get_many_by_executor_id(self, executor_id: str) -> list[AiConversationLog]:
+        raw_documents = self._table.find({"executor_id": executor_id})
+        return [
+            AiConversationLog.model_validate(obj=raw_document)
+            for raw_document in raw_documents
+        ]
+
     def update(self, ai_conversation_log: AiConversationLog):
         self._table.find_one_and_update(
             filter={"_id": ObjectId(ai_conversation_log.id)},

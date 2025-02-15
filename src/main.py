@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from bootstrap import bootstrap_di
 from routers.auth import auth_router
 from routers.auth.oauth import oauth_router
+from routers.conversation_log import conversation_log_router
 from routers.mail import mails_router
 from routers.user import users_router
 from utils.logger import setup_log
@@ -29,6 +30,7 @@ def create_app(title: str = "Seeker-Backend") -> FastAPI:
     app.include_router(router=auth_router)
     app.include_router(router=users_router)
     app.include_router(router=mails_router)
+    app.include_router(router=conversation_log_router)
 
     return app
 

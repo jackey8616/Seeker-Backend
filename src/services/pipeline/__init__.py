@@ -3,6 +3,7 @@ from traceback import format_exc
 from typing import Any, Callable
 
 from services.pipeline.step import Step
+from utils.logger import error
 
 
 @dataclass(kw_only=True)
@@ -33,8 +34,8 @@ class Pipeline:
                         ),
                     )
                 except Exception as e:
-                    print(f"Pipeline interrupted due to error: {e}")
-                    print(format_exc())
+                    error(f"Pipeline interrupted due to error: {e}")
+                    error(format_exc())
                     return e
 
             return next_step(passable, list(self._steps))
