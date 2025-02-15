@@ -74,8 +74,13 @@ async def mail_fitness_by_ai(
             "resume": resume,
         }
     )
-    assert isinstance(result, dict)
+    if isinstance(result, Exception):
+        return JSONResponse(
+            status_code=500,
+            content=jsonable_encoder({"error": repr(result)}),
+        )
 
+    assert isinstance(result, dict)
     return JSONResponse(
         content=jsonable_encoder(
             {
