@@ -20,6 +20,7 @@ pymongo = "^4.11"
 pyjwt = "^2.10.1"
 google-cloud-aiplatform = "^1.80.0"
 beautifulsoup4 = "^4.13.3"
+rouge = "^1.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

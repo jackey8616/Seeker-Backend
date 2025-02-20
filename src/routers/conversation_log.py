@@ -7,7 +7,7 @@ from dtos.responses.conversation_log.get_conversation_log import (
 from dtos.responses.conversation_log.get_conversation_logs import (
     GetConversationLogsResponseDto,
 )
-from repository.ai_conversation_log import AiConversationLogRepository
+from services.ai_log import AiLogService
 from services.auth.auth_bearer import JwtBearer
 
 conversation_log_router = APIRouter(
@@ -20,9 +20,12 @@ conversation_log_router = APIRouter(
     path="",
     response_model=GetConversationLogsResponseDto,
 )
-async def get_conversation_logs(token_data: TokenData = Depends(JwtBearer(TokenData))):
+async def get_conversation_logs(
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
+    ai_log_service: AiLogService = Depends(lambda: AiLogService()),
+):
     user_id = token_data.sub
-    logs = AiConversationLogRepository().get_many_by_executor_id(executor_id=user_id)
+    logs = ai_log_service.get_many_conversation_log_by_executor_id(executor_id=user_id)
     return GetConversationLogsResponseDto(logs=logs).response()
 
 
@@ -33,9 +36,10 @@ async def get_conversation_logs(token_data: TokenData = Depends(JwtBearer(TokenD
 async def get_conversation_log(
     log_id: str,
     token_data: TokenData = Depends(JwtBearer(TokenData)),
+    ai_log_service: AiLogService = Depends(lambda: AiLogService()),
 ):
     user_id = token_data.sub
-    log = AiConversationLogRepository().get_by_executor_id_and_id(
+    log = ai_log_service.get_conversation_log_by_executor_id_and_id(
         id=log_id, executor_id=user_id
     )
     return GetConversationLogResponseDto(log=log).response()

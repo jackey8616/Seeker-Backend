@@ -1,5 +1,10 @@
 from dataclasses import dataclass
+from re import DOTALL, search
+from typing import Any
 
+from rouge import Rouge
+
+from models.ai_chat_log import AiChatLog
 from services.google.vertex import GoogleVertexService
 from services.pipeline.flow.seek_au.crawl_from_links_step import CrawlDetail
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
@@ -38,12 +43,12 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
                 f"<RESUME>{resume}</RESUME>",
                 f"<RESTRICTIONS>{restriction}</RESTRICTIONS>",
                 "<FORMAT>",
-                "Summarize",
-                "... this is job summarize ...",
+                "# Summarize",
+                "<summarize>... this is job summarize wrap in summarize tag ...</summarize>",
                 "",
                 "# Suitability Assessment",
-                "... Positive comment ...",
-                "... Negative comment ...",
+                "<positive-comment>... Positive comment wrap in positive-comment tag ...</positive-comment>",
+                "<negative-comment>... Negative comment wrap in negative-comment tag...</negative-comment>",
                 "",
                 "# Fit Rate",
                 "N/100 (N is number from 0 up to 100, if you can't rate, just set N to 0)",
@@ -60,6 +65,10 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
                 content=f"<JOB_DESCRIPTION>{job_description}</JOB_DESCRIPTION>",
                 with_history=False,
             )
+            assert chat_log.id is not None
+            vertex_service.evaluate(
+                chat_log.id, self._evaluate_summarize(job_description, chat_log)
+            )
             fitting_results.append(
                 {
                     "link": detail.link,
@@ -70,3 +79,12 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
         pass_data = data.model_dump() | {"fitting_result": fitting_results}
 
         return next(pass_data)
+
+    def _evaluate_summarize(self, input: str, chat_log: AiChatLog) -> dict[str, Any]:
+        output = search(r"<summarize>([\s\S]*?)<\/summarize>", chat_log.output, DOTALL)
+        if output is None:
+            raise ValueError("AI generated content missing <summarize> tag.")
+
+        rouge_score = Rouge().get_scores(input, output.group(1))[0]
+
+        return {"rouge": rouge_score}

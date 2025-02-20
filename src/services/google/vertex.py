@@ -1,19 +1,23 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 
 from kink import di
 from vertexai import init
 from vertexai.generative_models import Content, GenerativeModel, Part
 
-from dtos.google.vertex import AiChatLog
+from models.ai_chat_log import AiChatLog
 from models.ai_conversation_log import AiConversationLog
+from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
 
 
 @dataclass
 class GoogleVertexService:
-    _log_repository: AiConversationLogRepository = field(
+    _chat_log_repository: AiChatLogRepository = field(
+        default_factory=lambda: AiChatLogRepository()
+    )
+    _conversation_log_repository: AiConversationLogRepository = field(
         default_factory=lambda: AiConversationLogRepository()
     )
 
@@ -33,7 +37,7 @@ class GoogleVertexService:
             ],
         )
         model.start_chat()
-        conversation_log = self._log_repository.insert_one(
+        conversation_log = self._conversation_log_repository.insert_one(
             obj=AiConversationLog(
                 executor_id=executor_id,
                 model_name=model_name,
@@ -56,11 +60,12 @@ class GoogleVertexService:
         system_instructions: Optional[list[str]] = None,
         with_history: bool = True,
     ) -> AiChatLog:
-        conversation_log = self._log_repository.get_by_executor_id_and_id(
+        conversation_log = self._conversation_log_repository.get_by_executor_id_and_id(
             executor_id=executor_id, id=id
         )
         if conversation_log is None:
             raise ValueError("Conversation not exists")
+        assert conversation_log.id is not None
 
         if model_name is not None:
             conversation_log.model_name = model_name
@@ -76,7 +81,10 @@ class GoogleVertexService:
         )
         history = []
         if with_history is True:
-            for chat in conversation_log.chats:
+            conversation_chats = self._chat_log_repository.get_many_by_conversation_id(
+                conversation_id=conversation_log.id
+            )
+            for chat in conversation_chats:
                 history.append(
                     Content.from_dict(
                         {
@@ -100,17 +108,31 @@ class GoogleVertexService:
         candidates = response.candidates
         usage_metadata = response.usage_metadata
         end_datetime = datetime.now(tz=timezone.utc)
-        chat_log = AiChatLog(
-            input=content,
-            output=candidates.pop().content.parts.pop().text,
-            input_token=usage_metadata.prompt_token_count,
-            output_token=usage_metadata.candidates_token_count,
-            start_datetime=start_datetime,
-            end_datetime=end_datetime,
+        chat_log = self._chat_log_repository.insert_one(
+            obj=AiChatLog(
+                conversation_id=conversation_log.id,
+                input=content,
+                output=candidates.pop().content.parts.pop().text,
+                input_token=usage_metadata.prompt_token_count,
+                output_token=usage_metadata.candidates_token_count,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+            )
         )
-        conversation_log.chats.append(chat_log)
+        assert chat_log.id is not None
+        conversation_log.chats.append(chat_log.id)
         conversation_log.total_input_token += chat_log.input_token
         conversation_log.total_output_token += chat_log.output_token
         conversation_log.updated_at = datetime.now(tz=timezone.utc)
-        self._log_repository.update(conversation_log)
+        self._conversation_log_repository.update(conversation_log)
+        return chat_log
+
+    def evaluate(self, chat_log_id: str, metrics: dict[str, Any]) -> AiChatLog:
+        chat_log = self._chat_log_repository.get_by_id(id=chat_log_id)
+        if chat_log is None:
+            raise ValueError("Chat not exists")
+        assert chat_log.id is not None
+
+        chat_log.metrics = metrics
+        self._chat_log_repository.update(chat_log)
         return chat_log

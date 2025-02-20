@@ -1,18 +1,19 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from models import MongoDocument
-from utils.typings import PyObjectId
+from models.ai_chat_log import AiChatLog
 
 
-class AiConversationLog(MongoDocument):
+class AiConversationLog(BaseModel):
     executor_id: str
     model_name: str
     system_instruction: list[str]
-    chats: list[PyObjectId]
+    chats: list[AiChatLog]
     total_input_token: int
     total_output_token: int
     created_at: datetime
+    id: str = Field(alias="_id")
     updated_at: Optional[datetime] = Field(default=None)
+    model_config = ConfigDict(populate_by_name=True)

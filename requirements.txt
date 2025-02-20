@@ -510,6 +510,9 @@ requests-oauthlib==2.0.0 ; python_version >= "3.13" and python_version < "4.0" \
 requests==2.32.3 ; python_version >= "3.13" and python_version < "4.0" \
     --hash=sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760 \
     --hash=sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6
+rouge==1.0.1 ; python_version >= "3.13" and python_version < "4.0" \
+    --hash=sha256:12b48346ca47d6bcf3c45061f315452b9ccec0620ee895ec85b7efc3d54aae34 \
+    --hash=sha256:28d118536e8c774dc47d1d15ec266479b4dd0914c4672ce117d4002789bdc644
 rsa==4.9 ; python_version >= "3.13" and python_version < "4.0" \
     --hash=sha256:90260d9058e514786967344d0ef75fa8727eed8a7d2e43ce9f4bcf1b536174f7 \
     --hash=sha256:e38464a49c6c85d7f1351b0126661487a7e0a14a50f1675ec50eb34d4f20ef21

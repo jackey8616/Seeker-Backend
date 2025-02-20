@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
+from dtos.ai_log.ai_conversation_log import AiConversationLog
 from dtos.responses.api_response import ApiResponseDto
-from models.ai_conversation_log import AiConversationLog
 
 
 @dataclass
