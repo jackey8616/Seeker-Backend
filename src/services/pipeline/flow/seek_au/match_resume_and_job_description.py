@@ -6,7 +6,7 @@ from rouge import Rouge
 
 from models.ai_chat_log import AiChatLog
 from services.google.vertex import GoogleVertexService
-from services.pipeline.flow.seek_au.crawl_from_links_step import CrawlDetail
+from services.job.repository import JobRepository
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
 
 
@@ -14,7 +14,7 @@ class MatchResumeAndJobDescriptionDataType(StepDataType):
     executor_id: str
     resume: str
     restriction: str
-    crawled_details: list[CrawlDetail]
+    job_ids: list[str]
 
 
 @dataclass
@@ -28,7 +28,7 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
         executor_id = data.executor_id
         resume = data.resume
         restriction = data.restriction
-        crawled_details = data.crawled_details
+        job_ids = data.job_ids
 
         vertex_service = GoogleVertexService()
         conversation_id = vertex_service.start_chat(
@@ -56,13 +56,19 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
             ],
         )
 
+        job_repository = JobRepository()
         fitting_results = []
-        for detail in crawled_details:
-            job_description = detail.model_dump_json()
+        for id in job_ids:
+            job = job_repository.get_by_id(id=id)
+            if job is None:
+                continue
+            assert job.id is not None
+
+            job_description = job.description
             chat_log = vertex_service.chat(
                 executor_id=executor_id,
                 id=conversation_id,
-                content=f"<JOB_DESCRIPTION>{job_description}</JOB_DESCRIPTION>",
+                content=f"<JOB_DESCRIPTION>{job.description}</JOB_DESCRIPTION>",
                 with_history=False,
             )
             assert chat_log.id is not None
@@ -71,7 +77,7 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
             )
             fitting_results.append(
                 {
-                    "link": detail.link,
+                    "link": job.url,
                     "response": chat_log.output,
                 }
             )
