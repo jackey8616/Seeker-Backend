@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from hashlib import md5
 
 from services.job.crawler.dtos import CrawledJob
@@ -10,9 +11,6 @@ from services.job.repository import JobRepository
 @dataclass
 class JobService:
     _job_repository: JobRepository = field(default_factory=lambda: JobRepository())
-
-    def is_job_url_exists(self, url: str) -> bool:
-        return self._job_repository.get_by_url(url=url) is not None
 
     def upsert_crawled_job(self, job: CrawledJob) -> Job | ValueError:
         model_company = Company(
@@ -29,5 +27,9 @@ class JobService:
             work_type=job.work_type,
             description=job.description,
             description_hash=md5(job.description.encode()).hexdigest(),
+            updated_at=datetime.now(tz=timezone.utc),
         )
         return self._job_repository.upsert(job=model_job)
+
+    def get_many(self) -> list[Job]:
+        return self._job_repository.get_many()

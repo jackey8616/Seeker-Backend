@@ -15,14 +15,21 @@ class JobRepository(Repository[Job]):
             return None
         return Job.model_validate(obj=raw_document)
 
+    def get_many(self) -> list[Job]:
+        raw_documents = self._table.find({})
+        return [Job.model_validate(obj=raw_document) for raw_document in raw_documents]
+
     def upsert(self, job: Job) -> Job | ValueError:
         result = self._table.update_one(
             filter={"url": job.url},
             update={
                 "$set": job.model_dump(
                     by_alias=True,
-                    exclude={"id"},
+                    exclude={"id", "created_at"},
                 ),
+                "$setOnInsert": {
+                    "created_at": job.created_at,
+                },
             },
             upsert=True,
         )
