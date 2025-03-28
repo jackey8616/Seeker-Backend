@@ -13,19 +13,13 @@ oauth_router = APIRouter(
 )
 
 
-def get_verify_path():
-    serve_domain = di["SERVE_DOMAIN"]
-    return serve_domain
-
-
 @oauth_router.get("/google/config")
 async def get_google_config():
     service: GoogleOAuthService = di[GoogleOAuthService]
-    redirect_uri = get_verify_path()
     client_id, scopes = service.get_oauth_config()
     return GoogleOAuthConfigResponseDto(
         client_id=client_id,
-        redirect_uri=redirect_uri,
+        redirect_uri=di["SERVE_DOMAIN"],
         scopes=scopes,
     ).response()
 
@@ -33,7 +27,7 @@ async def get_google_config():
 @oauth_router.get("/google/url", response_model=GoogleOAuthUrlResponseDto)
 async def get_google_oauth_url():
     service: GoogleOAuthService = di[GoogleOAuthService]
-    url, state = service.get_oauth_url(redirect_uri=get_verify_path())
+    url, state = service.get_oauth_url(redirect_uri=di["SERVE_DOMAIN"])
     return GoogleOAuthUrlResponseDto(url=url).response()
 
 
@@ -45,7 +39,7 @@ async def google_oauth_code_verify(request: Request):
     service = di[AuthService]
     (access_token, refresh_token, refresh_token_expiration) = service.oauth_login(
         code=code,
-        redirect_uri=get_verify_path(),
+        redirect_uri=di["SERVE_DOMAIN"],
     )
 
     response = GoogleOAuthVerifyResponseDto(access_token=access_token).response()

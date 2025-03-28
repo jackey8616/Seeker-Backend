@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
+from urllib.parse import urlparse
 
 from kink import di
 
@@ -72,6 +73,6 @@ class AuthService:
             "httponly": True,
             "secure": True,
             "samesite": "none",
-            "domain": "clo5de.info",
+            "domain": urlparse(di["SERVE_DOMAIN"]).hostname,
             "max_age": time_diff_in_seconds(datetime.now(), refresh_token_expiration),
         }
