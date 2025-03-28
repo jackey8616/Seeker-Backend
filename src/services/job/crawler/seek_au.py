@@ -14,7 +14,12 @@ from services.job.crawler.dtos import CrawledCompany, CrawledJob
 class SeekAuCrawler(Crawler):
     def crawl(self) -> CrawledJob | ValueError:
         url = self.url.geturl()
-        response = get(url=url)
+        response = get(
+            url=url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
+        )
         response.raise_for_status()
 
         company_link = self._extract_company_link(raw_html=response.text)
@@ -24,11 +29,11 @@ class SeekAuCrawler(Crawler):
         soup = BeautifulSoup(response.text, features="html.parser")
         title_el = soup.find(attrs={"data-automation": "job-detail-title"})
         if title_el is None:
-            return ValueError("Title element is None")
+            return ValueError(f"Title element is None: {url}")
         title = title_el.text
         company_name_el = soup.find(attrs={"data-automation": "advertiser-name"})
         if company_name_el is None:
-            return ValueError("CompanyName element is None")
+            return ValueError(f"CompanyName element is None: {url}")
         company_name = company_name_el.text
         company = CrawledCompany(
             name=company_name,
@@ -36,11 +41,11 @@ class SeekAuCrawler(Crawler):
         )
         location_el = soup.find(attrs={"data-automation": "job-detail-location"})
         if location_el is None:
-            return ValueError("Location element is None")
+            return ValueError(f"Location element is None: {url}")
         location = location_el.text
         work_type_el = soup.find(attrs={"data-automation": "job-detail-work-type"})
         if work_type_el is None:
-            return ValueError("WorkType element is None")
+            return ValueError(f"WorkType element is None: {url}")
         work_type = work_type_el.text
         salary_el = soup.find(attrs={"data-automation": "job-detail-salary"})
         expected_salary_el = soup.find(
@@ -48,11 +53,11 @@ class SeekAuCrawler(Crawler):
         )
         detail_salary_el = salary_el or expected_salary_el
         if detail_salary_el is None:
-            return ValueError("Salary and ExpectedSalary element are None")
+            return ValueError(f"Salary and ExpectedSalary element are None: {url}")
         salary = detail_salary_el.text
         details_el = soup.find(attrs={"data-automation": "jobAdDetails"})
         if details_el is None:
-            return ValueError("Details element is None")
+            return ValueError(f"Details element is None: {url}")
         details = details_el.text
 
         return CrawledJob(
