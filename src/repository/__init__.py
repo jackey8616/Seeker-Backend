@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Generic, Optional, TypeVar, cast, get_args
+from dataclasses import dataclass
+from typing import ClassVar, Generic, Optional, TypeVar, cast, get_args
 
 from bson import ObjectId
 from kink import di
@@ -10,7 +11,11 @@ from pymongo.collection import Collection
 T = TypeVar("T", bound=BaseModel)
 
 
+@dataclass
 class Repository(ABC, Generic[T]):
+    _default_page_size: ClassVar[int] = 20
+    _max_page_size: ClassVar[int] = 100
+
     @property
     def _table_name(self) -> str:
         raise NotImplementedError()

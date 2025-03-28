@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from hashlib import md5
+from typing import Optional
 
+from dtos.repository.cursor import Cursor
 from services.job.crawler.dtos import CrawledJob
 from services.job.dtos import Company
 from services.job.models import Job
@@ -31,5 +33,13 @@ class JobService:
         )
         return self._job_repository.upsert(job=model_job)
 
-    def get_many(self) -> list[Job]:
-        return self._job_repository.get_many()
+    def get_many(
+        self, paginator_token: Optional[str] = None
+    ) -> tuple[list[Job], Cursor]:
+        (jobs, paginator) = self._job_repository.get_many(
+            paginator_token=paginator_token
+        )
+
+        cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
+
+        return (jobs, cursor)
