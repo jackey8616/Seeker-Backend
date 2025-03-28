@@ -14,3 +14,14 @@ class UserRepository(Repository[User]):
         if raw_user is None:
             return None
         return User.model_validate(obj=raw_user)
+
+    def update(self, user: User):
+        self._table.find_one_and_update(
+            filter={"_id": user.id},
+            update={
+                "$set": user.model_dump(
+                    by_alias=True,
+                    exclude={"id"},
+                ),
+            },
+        )

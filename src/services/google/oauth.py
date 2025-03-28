@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from google.auth.external_account_authorized_user import Credentials as extCredentials
+from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from kink import di
@@ -84,4 +85,18 @@ class GoogleOAuthService:
             "token_url": flow.client_config["token_uri"],
         } | user.google_credentials.model_dump(mode="json")
 
-        return extCredentials.from_info(info=info)
+        credentials = extCredentials.from_info(info=info)
+
+        if credentials.expired:
+            try:
+                credentials.refresh(Request())
+                user.google_credentials = GoogleCredentialsTransformer().transform(
+                    data=credentials
+                )
+                user_repository.update(user)
+            except Exception as e:
+                raise ValueError(
+                    "Google OAuth credentials have expired. Please re-authenticate."
+                ) from e
+
+        return credentials
