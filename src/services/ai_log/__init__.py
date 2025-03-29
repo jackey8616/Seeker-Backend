@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from dtos.ai_log.ai_conversation_log import AiConversationLog as DtoAiConversationLog
+from dtos.repository.cursor import Cursor
 from models.ai_conversation_log import AiConversationLog as ModelAiConversationLog
 from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
@@ -17,11 +18,12 @@ class AiLogService:
     )
 
     def get_many_conversation_log_by_executor_id(
-        self, executor_id: str
-    ) -> list[DtoAiConversationLog]:
-        conversation_logs = (
+        self, executor_id: str, paginator_token: Optional[str] = None
+    ) -> tuple[list[DtoAiConversationLog], Cursor]:
+        conversation_logs, paginator = (
             self._ai_conversation_log_repository.get_many_by_executor_id(
-                executor_id=executor_id
+                executor_id=executor_id,
+                paginator_token=paginator_token,
             )
         )
 
@@ -45,7 +47,11 @@ class AiLogService:
                     updated_at=conversation_log.updated_at,
                 )
             )
-        return dto_logs
+
+        cursor = Cursor.from_paginator(
+            paginator=paginator, sorted_results=conversation_logs
+        )
+        return (dto_logs, cursor)
 
     def get_conversation_log_by_executor_id_and_id(
         self, id: str, executor_id: str

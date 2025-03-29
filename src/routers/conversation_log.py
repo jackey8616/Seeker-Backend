@@ -16,17 +16,21 @@ conversation_log_router = APIRouter(
 )
 
 
-@conversation_log_router.get(
+@conversation_log_router.post(
     path="",
     response_model=GetConversationLogsResponseDto,
 )
 async def get_conversation_logs(
+    paginator_token: str | None = None,
     token_data: TokenData = Depends(JwtBearer(TokenData)),
     ai_log_service: AiLogService = Depends(lambda: AiLogService()),
 ):
     user_id = token_data.sub
-    logs = ai_log_service.get_many_conversation_log_by_executor_id(executor_id=user_id)
-    return GetConversationLogsResponseDto(logs=logs).response()
+    logs, cursor = ai_log_service.get_many_conversation_log_by_executor_id(
+        executor_id=user_id,
+        paginator_token=paginator_token,
+    )
+    return GetConversationLogsResponseDto(logs=logs, cursor=cursor).response()
 
 
 @conversation_log_router.get(
