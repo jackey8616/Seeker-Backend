@@ -10,6 +10,8 @@ from utils.typings import GoogleOAuthCredentials
 
 @dataclass
 class GoogleMailService:
+    _default_max_results: int = 10
+
     def _build_service(self, credentials: GoogleOAuthCredentials):
         return build(serviceName="gmail", version="v1", credentials=credentials)
 
@@ -30,7 +32,7 @@ class GoogleMailService:
         self,
         credentials: GoogleOAuthCredentials,
         next_page_token: Optional[str] = None,
-    ) -> tuple[list[GmailThreadInfo], Optional[str]]:
+    ) -> tuple[list[GmailThreadInfo], Optional[str], int]:
         label = self.get_seeker_label_id(credentials=credentials)
         if label is None:
             raise ValueError("User not apply Seeker label with mail filter")
@@ -44,6 +46,7 @@ class GoogleMailService:
                 q="is:unread",
                 labelIds=[label.id],
                 pageToken=next_page_token,
+                maxResults=self._default_max_results,
             )
             .execute()
         )
@@ -52,7 +55,8 @@ class GoogleMailService:
         threads: list[GmailThreadInfo] = [
             GmailThreadInfo.model_validate(raw_thread) for raw_thread in raw_threads
         ]
-        return (threads, next_page_token)
+        total_count = thread_result.get("resultSizeEstimate", 0)
+        return (threads, next_page_token, total_count)
 
     def get_thread(
         self, credentials: GoogleOAuthCredentials, thread_id: str

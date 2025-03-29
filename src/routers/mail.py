@@ -3,6 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from dtos.auth.token import TokenData
+from dtos.request.mail.list_mails import ListMailsRequestDto
 from dtos.responses.mail.get_mail import GetMailResponseDto
 from dtos.responses.mail.list_mails import ListMailInfosResponseDto
 from services.auth.auth_bearer import JwtBearer
@@ -18,13 +19,17 @@ mails_router = APIRouter(
 )
 
 
-@mails_router.get("/list")
-async def list_mails(token_data: TokenData = Depends(JwtBearer(TokenData))):
+@mails_router.post("/list")
+async def list_mails(
+    request: ListMailsRequestDto,
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
+):
     user_id = token_data.sub
     oauth_credentials = GoogleOAuthService().get_oauth_credentials(user_id=user_id)
 
-    (thread_infos, next_page_token) = GoogleMailService().list_threads(
-        credentials=oauth_credentials
+    (thread_infos, next_page_token, total_count) = GoogleMailService().list_threads(
+        credentials=oauth_credentials,
+        next_page_token=request.next_page_token,
     )
     mail_infos = [
         MailInfoTransformer().transform(data=thread_info)
@@ -34,6 +39,7 @@ async def list_mails(token_data: TokenData = Depends(JwtBearer(TokenData))):
     return ListMailInfosResponseDto(
         mail_infos=mail_infos,
         next_page_token=next_page_token,
+        total_count=total_count,
     ).response()
 
 
