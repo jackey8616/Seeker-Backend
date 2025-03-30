@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 
-from dtos.auth.token import TokenData
-from dtos.responses.conversation_log.get_conversation_log import (
+from responses.conversation_log.get_conversation_log import (
     GetConversationLogResponseDto,
 )
-from dtos.responses.conversation_log.get_conversation_logs import (
+from responses.conversation_log.get_conversation_logs import (
     GetConversationLogsResponseDto,
 )
 from services.ai_log import AiLogService
 from services.auth.auth_bearer import JwtBearer
+from services.auth.dtos.token import TokenData
 
 conversation_log_router = APIRouter(
     prefix="/conversation_logs",

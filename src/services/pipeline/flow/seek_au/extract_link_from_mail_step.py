@@ -3,7 +3,7 @@ from re import findall
 from typing import Optional
 from urllib.parse import urljoin, urlparse
 
-from dtos.google.mail import GmailMessage, GmailPart, GmailThread
+from services.google.mail.dtos import GmailMessage, GmailPart, GmailThread
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
 
 

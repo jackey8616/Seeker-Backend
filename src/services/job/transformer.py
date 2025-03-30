@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from dtos.responses.job import JobDto
 from models.ai_chat_log import ModelAiChatLog
 from models.job import ModelJob
+from services.job.dtos.job_dto import JobDto
 
 
 @dataclass

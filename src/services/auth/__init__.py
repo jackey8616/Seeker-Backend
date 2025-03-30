@@ -4,11 +4,10 @@ from urllib.parse import urlparse
 
 from kink import di
 
-from dtos.auth.token import TokenData
-from models.user import ModelUser
-from repository.user import UserRepository
+from services.auth.dtos.token import TokenData
 from services.auth.jwt import JwtService
 from services.google.oauth import GoogleOAuthService
+from services.user import UserService
 from utils.time import time_diff_in_seconds
 
 
@@ -17,7 +16,7 @@ class AuthService:
     _google_oauth_service: GoogleOAuthService = field(
         default_factory=lambda: di[GoogleOAuthService]
     )
-    _user_repository: UserRepository = field(default_factory=lambda: di[UserRepository])
+    _user_service: UserService = field(default_factory=lambda: di[UserService])
     _jwt_service: JwtService = field(default_factory=lambda: JwtService())
 
     def oauth_login(self, code: str, redirect_uri: str) -> tuple[str, str, datetime]:
@@ -30,13 +29,11 @@ class AuthService:
             credentials=oauth_credentials
         )
 
-        user = self._user_repository.get_by_google_id(google_id=userinfo.id)
+        user = self._user_service.get_by_google_id(google_id=userinfo.id)
         if user is None:
-            user = self._user_repository.insert_one(
-                obj=ModelUser(
-                    google_userinfo=userinfo,
-                    google_credentials=credentials,
-                )
+            user = self._user_service.create_new_user_through_oauth(
+                userinfo=userinfo,
+                credentials=credentials,
             )
 
         assert user.id is not None

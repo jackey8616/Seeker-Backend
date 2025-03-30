@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Request
 from kink import di
 
-from dtos.responses.auth.google_oauth_config import GoogleOAuthConfigResponseDto
-from dtos.responses.auth.google_oauth_url import GoogleOAuthUrlResponseDto
-from dtos.responses.auth.google_oauth_verify import GoogleOAuthVerifyResponseDto
+from responses.auth.google_oauth_config import GoogleOAuthConfigResponseDto
+from responses.auth.google_oauth_url import GoogleOAuthUrlResponseDto
+from responses.auth.google_oauth_verify import GoogleOAuthVerifyResponseDto
 from services.auth import AuthService
 from services.google.oauth import GoogleOAuthService
 

@@ -1,13 +1,12 @@
 from datetime import datetime, timezone
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-from models import MongoDocument
+from models.ai_chat_log import ModelAiChatLog
 from services.job.dtos.company import Company
-from utils.typings import PyObjectId
 
 
-class ModelJob(MongoDocument):
+class JobDto(BaseModel):
     domain: str
     url: str
     title: str
@@ -19,4 +18,4 @@ class ModelJob(MongoDocument):
     description_hash: str
     updated_at: datetime
     created_at: datetime = Field(default=datetime.now(tz=timezone.utc))
-    chat_log_ids: list[PyObjectId] = Field(default=[])
+    chat_logs: list[ModelAiChatLog] = Field(default=[])

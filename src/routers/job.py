@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from dtos.auth.token import TokenData
-from dtos.request.job.get_jobs import GetJobsRequestDto
-from dtos.responses.job.get_jobs import GetJobsResponseDto
+from request.job.get_jobs import GetJobsRequestDto
+from responses.job.get_jobs import GetJobsResponseDto
 from services.auth.auth_bearer import JwtBearer
+from services.auth.dtos.token import TokenData
 from services.job import JobService
 
 jobs_router = APIRouter(

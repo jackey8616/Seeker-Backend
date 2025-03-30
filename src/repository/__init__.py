@@ -8,8 +8,8 @@ from pydantic import BaseModel, TypeAdapter
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
-from dtos.repository.order_by import OrderBy
-from dtos.repository.paginator import Paginator
+from repository.order_by import OrderBy
+from repository.paginator import Paginator
 
 T = TypeVar("T", bound=BaseModel)
 

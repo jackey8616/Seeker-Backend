@@ -3,9 +3,9 @@ from os import getenv
 from dotenv import load_dotenv
 from kink import di
 
-from repository.user import UserRepository
 from services.auth import AuthService
 from services.google.oauth import GoogleOAuthService
+from services.user import UserService
 
 
 def bootstrap_di(dotenv_path: str = ".env"):
@@ -23,6 +23,6 @@ def bootstrap_di(dotenv_path: str = ".env"):
     di["GOOGLE_GCP_PROJECT_ID"] = getenv("GOOGLE_GCP_PROJECT_ID")
     di["GOOGLE_GCP_REGION"] = getenv("GOOGLE_GCP_REGION")
 
-    di[UserRepository] = UserRepository()
+    di[UserService] = UserService()
     di[GoogleOAuthService] = GoogleOAuthService()
     di[AuthService] = AuthService()

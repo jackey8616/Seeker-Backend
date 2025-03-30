@@ -3,12 +3,12 @@ from datetime import datetime, timezone
 from hashlib import md5
 from typing import Optional
 
-from dtos.repository.cursor import Cursor
-from dtos.responses.job import JobDto
-from dtos.shared.company import Company
 from models.job import ModelJob
 from repository.ai_chat_log import AiChatLogRepository
+from repository.cursor import Cursor
 from services.job.crawler.dtos import CrawledJob
+from services.job.dtos.company import Company
+from services.job.dtos.job_dto import JobDto
 from services.job.repository import JobRepository
 from services.job.transformer import JobDtoTransformer
 

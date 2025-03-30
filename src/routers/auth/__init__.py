@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 from kink import di
 
-from dtos.responses.auth.refresh import RefreshResponseDto
+from responses.auth.refresh import RefreshResponseDto
 from services.auth import AuthService
 
 auth_router = APIRouter(

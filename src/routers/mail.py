@@ -2,16 +2,16 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from dtos.auth.token import TokenData
-from dtos.request.mail.list_mails import ListMailsRequestDto
-from dtos.responses.mail.get_mail import GetMailResponseDto
-from dtos.responses.mail.list_mails import ListMailInfosResponseDto
+from request.mail.list_mails import ListMailsRequestDto
+from responses.mail.get_mail import GetMailResponseDto
+from responses.mail.list_mails import ListMailInfosResponseDto
 from services.auth.auth_bearer import JwtBearer
+from services.auth.dtos.token import TokenData
 from services.google.mail import GoogleMailService
 from services.google.oauth import GoogleOAuthService
+from services.mail.transformers import MailTransformer
+from services.mail.transformers.mail_info import MailInfoTransformer
 from services.pipeline.flow.seek_au import SeekAuPipeline
-from transformers.mail import MailTransformer
-from transformers.mail.mail_info import MailInfoTransformer
 
 mails_router = APIRouter(
     prefix="/mails",

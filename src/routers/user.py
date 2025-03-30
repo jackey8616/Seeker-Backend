@@ -3,10 +3,10 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from kink import di
 
-from dtos.auth.token import TokenData
-from dtos.user.userinfo import Userinfo
-from repository.user import UserRepository
 from services.auth.auth_bearer import JwtBearer
+from services.auth.dtos.token import TokenData
+from services.auth.dtos.userinfo import Userinfo
+from services.user import UserService
 
 users_router = APIRouter(
     prefix="/users",
@@ -15,10 +15,12 @@ users_router = APIRouter(
 
 
 @users_router.get("/info")
-async def info(token_data: TokenData = Depends(JwtBearer(TokenData))):
+async def info(
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
+    user_service: UserService = Depends(lambda: di[UserService]),
+):
     user_id = token_data.sub
-    repository = di[UserRepository]
-    user = repository.get_by_id(id=user_id)
+    user = user_service.get_by_id(user_id=user_id)
     if user is None:
         userinfo = {}
     else:
