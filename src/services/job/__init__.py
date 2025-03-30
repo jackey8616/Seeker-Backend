@@ -45,13 +45,13 @@ class JobService:
         (jobs, paginator) = self._job_repository.get_many(
             paginator_token=paginator_token
         )
+        cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
 
         job_dtos: list[JobDto] = []
         for job in jobs:
             chat_logs = self._chat_log_repository.get_many_by_ids(
                 ids=job.chat_log_ids, executor_id=executor_id
             )
-            cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
             job_dto = JobDtoTransformer(job=job, chat_logs=chat_logs).transform()
             job_dtos.append(job_dto)
         return (job_dtos, cursor)
