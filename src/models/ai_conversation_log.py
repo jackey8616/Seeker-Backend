@@ -7,7 +7,7 @@ from models import MongoDocument
 from utils.typings import PyObjectId
 
 
-class AiConversationLog(MongoDocument):
+class ModelAiConversationLog(MongoDocument):
     executor_id: PyObjectId
     model_name: str
     system_instruction: list[str]

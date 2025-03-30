@@ -7,7 +7,7 @@ from models import MongoDocument
 from utils.typings import PyObjectId
 
 
-class Job(MongoDocument):
+class ModelJob(MongoDocument):
     domain: str
     url: str
     title: str

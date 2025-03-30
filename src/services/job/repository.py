@@ -3,23 +3,23 @@ from typing import Optional
 
 from bson import ObjectId
 
+from models.job import ModelJob
 from repository import Repository
-from services.job.models import Job
 
 
 @dataclass
-class JobRepository(Repository[Job]):
+class JobRepository(Repository[ModelJob]):
     @property
     def _table_name(self) -> str:
         return "jobs"
 
-    def get_by_url(self, url: str) -> Optional[Job]:
+    def get_by_url(self, url: str) -> Optional[ModelJob]:
         raw_document = self._table.find_one({"url": url})
         if raw_document is None:
             return None
-        return Job.model_validate(obj=raw_document)
+        return ModelJob.model_validate(obj=raw_document)
 
-    def upsert(self, job: Job) -> Job | ValueError:
+    def upsert(self, job: ModelJob) -> ModelJob | ValueError:
         result = self._table.update_one(
             filter={"url": job.url},
             update={
@@ -45,7 +45,7 @@ class JobRepository(Repository[Job]):
             return ValueError("Upsert failed")
         return upserted_obj
 
-    def update(self, job: Job):
+    def update(self, job: ModelJob):
         self._table.find_one_and_update(
             filter={"_id": ObjectId(job.id)},
             update={

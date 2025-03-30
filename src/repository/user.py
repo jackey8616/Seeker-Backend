@@ -1,21 +1,21 @@
 from typing import Optional
 
-from models.user import User
+from models.user import ModelUser
 from repository import Repository
 
 
-class UserRepository(Repository[User]):
+class UserRepository(Repository[ModelUser]):
     @property
     def _table_name(self) -> str:
         return "users"
 
-    def get_by_google_id(self, google_id: str) -> Optional[User]:
+    def get_by_google_id(self, google_id: str) -> Optional[ModelUser]:
         raw_user = self._table.find_one({"google_userinfo.id": {"$eq": google_id}})
         if raw_user is None:
             return None
-        return User.model_validate(obj=raw_user)
+        return ModelUser.model_validate(obj=raw_user)
 
-    def update(self, user: User):
+    def update(self, user: ModelUser):
         self._table.find_one_and_update(
             filter={"_id": user.id},
             update={

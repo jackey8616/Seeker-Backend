@@ -2,18 +2,18 @@ from typing import Optional
 
 from bson import ObjectId
 
-from models.ai_conversation_log import AiConversationLog
+from models.ai_conversation_log import ModelAiConversationLog
 from repository import Repository
 
 
-class AiConversationLogRepository(Repository[AiConversationLog]):
+class AiConversationLogRepository(Repository[ModelAiConversationLog]):
     @property
     def _table_name(self) -> str:
         return "ai_conversation_logs"
 
     def get_by_executor_id_and_id(
         self, id: str, executor_id: str
-    ) -> Optional[AiConversationLog]:
+    ) -> Optional[ModelAiConversationLog]:
         raw_document = self._table.find_one(
             {
                 "_id": ObjectId(id),
@@ -22,9 +22,9 @@ class AiConversationLogRepository(Repository[AiConversationLog]):
         )
         if raw_document is None:
             return None
-        return AiConversationLog.model_validate(obj=raw_document)
+        return ModelAiConversationLog.model_validate(obj=raw_document)
 
-    def update(self, ai_conversation_log: AiConversationLog):
+    def update(self, ai_conversation_log: ModelAiConversationLog):
         self._table.find_one_and_update(
             filter={"_id": ObjectId(ai_conversation_log.id)},
             update={

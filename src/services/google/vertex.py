@@ -6,8 +6,8 @@ from kink import di
 from vertexai import init
 from vertexai.generative_models import Content, GenerativeModel, Part
 
-from models.ai_chat_log import AiChatLog
-from models.ai_conversation_log import AiConversationLog
+from models.ai_chat_log import ModelAiChatLog
+from models.ai_conversation_log import ModelAiConversationLog
 from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
 
@@ -38,7 +38,7 @@ class GoogleVertexService:
         )
         model.start_chat()
         conversation_log = self._conversation_log_repository.insert_one(
-            obj=AiConversationLog(
+            obj=ModelAiConversationLog(
                 executor_id=executor_id,
                 model_name=model_name,
                 system_instruction=system_instructions,
@@ -59,7 +59,7 @@ class GoogleVertexService:
         model_name: Optional[str] = None,
         system_instructions: Optional[list[str]] = None,
         with_history: bool = True,
-    ) -> AiChatLog:
+    ) -> ModelAiChatLog:
         conversation_log = self._conversation_log_repository.get_by_executor_id_and_id(
             executor_id=executor_id, id=id
         )
@@ -111,7 +111,7 @@ class GoogleVertexService:
         usage_metadata = response.usage_metadata
         end_datetime = datetime.now(tz=timezone.utc)
         chat_log = self._chat_log_repository.insert_one(
-            obj=AiChatLog(
+            obj=ModelAiChatLog(
                 executor_id=executor_id,
                 conversation_id=conversation_log.id,
                 input=content,
@@ -130,7 +130,7 @@ class GoogleVertexService:
         self._conversation_log_repository.update(conversation_log)
         return chat_log
 
-    def evaluate(self, chat_log_id: str, metrics: dict[str, Any]) -> AiChatLog:
+    def evaluate(self, chat_log_id: str, metrics: dict[str, Any]) -> ModelAiChatLog:
         chat_log = self._chat_log_repository.get_by_id(id=chat_log_id)
         if chat_log is None:
             raise ValueError("Chat not exists")

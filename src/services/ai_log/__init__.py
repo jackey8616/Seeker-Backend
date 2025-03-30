@@ -3,7 +3,7 @@ from typing import Optional
 
 from dtos.ai_log.ai_conversation_log import AiConversationLog as DtoAiConversationLog
 from dtos.repository.cursor import Cursor
-from models.ai_conversation_log import AiConversationLog as ModelAiConversationLog
+from models.ai_conversation_log import ModelAiConversationLog
 from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
 

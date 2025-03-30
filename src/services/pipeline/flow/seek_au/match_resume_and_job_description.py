@@ -4,7 +4,7 @@ from typing import Any
 
 from rouge import Rouge
 
-from models.ai_chat_log import AiChatLog
+from models.ai_chat_log import ModelAiChatLog
 from services.google.vertex import GoogleVertexService
 from services.job.repository import JobRepository
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
@@ -91,7 +91,9 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
 
         return next(pass_data)
 
-    def _evaluate_summarize(self, input: str, chat_log: AiChatLog) -> dict[str, Any]:
+    def _evaluate_summarize(
+        self, input: str, chat_log: ModelAiChatLog
+    ) -> dict[str, Any]:
         output = search(r"<summarize>([\s\S]*?)<\/summarize>", chat_log.output, DOTALL)
         if output is None:
             raise ValueError("AI generated content missing <summarize> tag.")

@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 
 from dtos.responses.job import JobDto
-from models.ai_chat_log import AiChatLog
-from services.job.models import Job
+from models.ai_chat_log import ModelAiChatLog
+from models.job import ModelJob
 
 
 @dataclass
 class JobDtoTransformer:
-    job: Job
-    chat_logs: list[AiChatLog]
+    job: ModelJob
+    chat_logs: list[ModelAiChatLog]
 
     def transform(self) -> JobDto:
         chat_log_maps = {chat_log.id: chat_log for chat_log in self.chat_logs}

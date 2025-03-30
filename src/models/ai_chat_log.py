@@ -7,7 +7,7 @@ from models import MongoDocument
 from utils.typings import PyObjectId
 
 
-class AiChatLog(MongoDocument):
+class ModelAiChatLog(MongoDocument):
     executor_id: PyObjectId
     conversation_id: PyObjectId
     input: str

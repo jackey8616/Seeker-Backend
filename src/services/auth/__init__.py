@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from kink import di
 
 from dtos.auth.token import TokenData
-from models.user import User
+from models.user import ModelUser
 from repository.user import UserRepository
 from services.auth.jwt import JwtService
 from services.google.oauth import GoogleOAuthService
@@ -33,7 +33,7 @@ class AuthService:
         user = self._user_repository.get_by_google_id(google_id=userinfo.id)
         if user is None:
             user = self._user_repository.insert_one(
-                obj=User(
+                obj=ModelUser(
                     google_userinfo=userinfo,
                     google_credentials=credentials,
                 )

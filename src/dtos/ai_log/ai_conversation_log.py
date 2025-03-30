@@ -3,14 +3,14 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from models.ai_chat_log import AiChatLog
+from models.ai_chat_log import ModelAiChatLog
 
 
 class AiConversationLog(BaseModel):
     executor_id: str
     model_name: str
     system_instruction: list[str]
-    chats: list[AiChatLog]
+    chats: list[ModelAiChatLog]
     total_input_token: int
     total_output_token: int
     created_at: datetime

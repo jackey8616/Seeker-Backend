@@ -6,9 +6,9 @@ from typing import Optional
 from dtos.repository.cursor import Cursor
 from dtos.responses.job import JobDto
 from dtos.shared.company import Company
+from models.job import ModelJob
 from repository.ai_chat_log import AiChatLogRepository
 from services.job.crawler.dtos import CrawledJob
-from services.job.models import Job
 from services.job.repository import JobRepository
 from services.job.transformer import JobDtoTransformer
 
@@ -20,12 +20,12 @@ class JobService:
         default_factory=lambda: AiChatLogRepository()
     )
 
-    def upsert_crawled_job(self, job: CrawledJob) -> Job | ValueError:
+    def upsert_crawled_job(self, job: CrawledJob) -> ModelJob | ValueError:
         model_company = Company(
             name=job.company.name,
             link=job.company.link,
         )
-        model_job = Job(
+        model_job = ModelJob(
             domain=job.domain,
             url=job.url,
             title=job.title,
