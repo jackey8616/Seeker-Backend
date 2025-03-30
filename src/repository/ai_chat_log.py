@@ -9,14 +9,20 @@ class AiChatLogRepository(Repository[AiChatLog]):
     def _table_name(self) -> str:
         return "ai_chat_logs"
 
-    def get_many_by_conversation_id(self, conversation_id: str) -> list[AiChatLog]:
-        raw_documents = self._table.find({"conversation_id": conversation_id})
+    def get_many_by_conversation_id_and_executor_id(
+        self, conversation_id: str, executor_id: str
+    ) -> list[AiChatLog]:
+        raw_documents = self._table.find(
+            {"conversation_id": conversation_id, "executor_id": executor_id}
+        )
         return [
             AiChatLog.model_validate(obj=raw_document) for raw_document in raw_documents
         ]
 
-    def get_many_by_ids(self, ids: list[str]) -> list[AiChatLog]:
-        raw_documents = self._table.find({"_id": {"$in": [ObjectId(id) for id in ids]}})
+    def get_many_by_ids(self, ids: list[str], executor_id: str) -> list[AiChatLog]:
+        raw_documents = self._table.find(
+            {"_id": {"$in": [ObjectId(id) for id in ids]}, "executor_id": executor_id}
+        )
         return [
             AiChatLog.model_validate(obj=raw_document) for raw_document in raw_documents
         ]

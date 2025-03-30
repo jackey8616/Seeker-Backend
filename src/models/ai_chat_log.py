@@ -8,6 +8,7 @@ from utils.typings import PyObjectId
 
 
 class AiChatLog(MongoDocument):
+    executor_id: PyObjectId
     conversation_id: PyObjectId
     input: str
     output: str

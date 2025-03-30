@@ -31,8 +31,10 @@ class AiLogService:
         for conversation_log in conversation_logs:
             assert conversation_log.id is not None
 
-            chat_logs = self._ai_chat_repository.get_many_by_conversation_id(
-                conversation_id=conversation_log.id
+            chat_logs = (
+                self._ai_chat_repository.get_many_by_conversation_id_and_executor_id(
+                    conversation_id=conversation_log.id, executor_id=executor_id
+                )
             )
             dto_logs.append(
                 DtoAiConversationLog(
@@ -65,8 +67,10 @@ class AiLogService:
             return None
         assert conversation_log.id is not None
 
-        chat_logs = self._ai_chat_repository.get_many_by_conversation_id(
-            conversation_id=conversation_log.id
+        chat_logs = (
+            self._ai_chat_repository.get_many_by_conversation_id_and_executor_id(
+                conversation_id=id, executor_id=executor_id
+            )
         )
         return DtoAiConversationLog(
             _id=id,

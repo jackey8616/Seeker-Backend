@@ -81,8 +81,10 @@ class GoogleVertexService:
         )
         history = []
         if with_history is True:
-            conversation_chats = self._chat_log_repository.get_many_by_conversation_id(
-                conversation_id=conversation_log.id
+            conversation_chats = (
+                self._chat_log_repository.get_many_by_conversation_id_and_executor_id(
+                    conversation_id=conversation_log.id, executor_id=executor_id
+                )
             )
             for chat in conversation_chats:
                 history.append(
@@ -110,6 +112,7 @@ class GoogleVertexService:
         end_datetime = datetime.now(tz=timezone.utc)
         chat_log = self._chat_log_repository.insert_one(
             obj=AiChatLog(
+                executor_id=executor_id,
                 conversation_id=conversation_log.id,
                 input=content,
                 output=candidates.pop().content.parts.pop().text,

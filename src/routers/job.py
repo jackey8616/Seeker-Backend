@@ -18,9 +18,11 @@ jobs_router = APIRouter(
 )
 async def get_jobs(
     request: GetJobsRequestDto,
-    _: TokenData = Depends(JwtBearer(TokenData)),
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
     job_service: JobService = Depends(lambda: JobService()),
 ):
     paginator_token = request.page_token
-    (job_dtos, cursor) = job_service.get_many(paginator_token=paginator_token)
+    (job_dtos, cursor) = job_service.get_many(
+        executor_id=token_data.sub, paginator_token=paginator_token
+    )
     return GetJobsResponseDto(jobs=job_dtos, cursor=cursor).response()

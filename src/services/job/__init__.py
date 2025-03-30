@@ -40,7 +40,7 @@ class JobService:
         return self._job_repository.upsert(job=model_job)
 
     def get_many(
-        self, paginator_token: Optional[str] = None
+        self, executor_id: str, paginator_token: Optional[str] = None
     ) -> tuple[list[JobDto], Cursor]:
         (jobs, paginator) = self._job_repository.get_many(
             paginator_token=paginator_token
@@ -49,7 +49,7 @@ class JobService:
         job_dtos: list[JobDto] = []
         for job in jobs:
             chat_logs = self._chat_log_repository.get_many_by_ids(
-                ids=job.chat_log_ids,
+                ids=job.chat_log_ids, executor_id=executor_id
             )
             cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
             job_dto = JobDtoTransformer(job=job, chat_logs=chat_logs).transform()
