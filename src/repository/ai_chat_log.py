@@ -15,6 +15,12 @@ class AiChatLogRepository(Repository[AiChatLog]):
             AiChatLog.model_validate(obj=raw_document) for raw_document in raw_documents
         ]
 
+    def get_many_by_ids(self, ids: list[str]) -> list[AiChatLog]:
+        raw_documents = self._table.find({"_id": {"$in": [ObjectId(id) for id in ids]}})
+        return [
+            AiChatLog.model_validate(obj=raw_document) for raw_document in raw_documents
+        ]
+
     def update(self, ai_chat_log: AiChatLog):
         self._table.find_one_and_update(
             filter={"_id": ObjectId(ai_chat_log.id)},

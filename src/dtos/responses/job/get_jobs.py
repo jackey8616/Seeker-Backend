@@ -2,12 +2,12 @@ from dataclasses import dataclass
 
 from dtos.repository.cursor import Cursor
 from dtos.responses.api_response import ApiResponseDto
-from services.job.models import Job
+from dtos.responses.job import JobDto
 
 
 @dataclass
 class GetJobsResponseDto(ApiResponseDto):
-    jobs: list[Job]
+    jobs: list[JobDto]
     cursor: Cursor
 
     @property

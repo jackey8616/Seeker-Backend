@@ -22,5 +22,5 @@ async def get_jobs(
     job_service: JobService = Depends(lambda: JobService()),
 ):
     paginator_token = request.page_token
-    (jobs, cursor) = job_service.get_many(paginator_token=paginator_token)
-    return GetJobsResponseDto(jobs=jobs, cursor=cursor).response()
+    (job_dtos, cursor) = job_service.get_many(paginator_token=paginator_token)
+    return GetJobsResponseDto(jobs=job_dtos, cursor=cursor).response()

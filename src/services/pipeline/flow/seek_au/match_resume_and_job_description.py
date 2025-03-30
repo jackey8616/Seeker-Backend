@@ -75,6 +75,11 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
             vertex_service.evaluate(
                 chat_log.id, self._evaluate_summarize(job_description, chat_log)
             )
+
+            # Link the ChatLog ID with the Job
+            job.chat_log_ids.append(chat_log.id)
+            job_repository.update(job)
+
             fitting_results.append(
                 {
                     "link": job.url,

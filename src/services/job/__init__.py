@@ -4,15 +4,21 @@ from hashlib import md5
 from typing import Optional
 
 from dtos.repository.cursor import Cursor
+from dtos.responses.job import JobDto
+from dtos.shared.company import Company
+from repository.ai_chat_log import AiChatLogRepository
 from services.job.crawler.dtos import CrawledJob
-from services.job.dtos import Company
 from services.job.models import Job
 from services.job.repository import JobRepository
+from services.job.transformer import JobDtoTransformer
 
 
 @dataclass
 class JobService:
     _job_repository: JobRepository = field(default_factory=lambda: JobRepository())
+    _chat_log_repository: AiChatLogRepository = field(
+        default_factory=lambda: AiChatLogRepository()
+    )
 
     def upsert_crawled_job(self, job: CrawledJob) -> Job | ValueError:
         model_company = Company(
@@ -35,11 +41,17 @@ class JobService:
 
     def get_many(
         self, paginator_token: Optional[str] = None
-    ) -> tuple[list[Job], Cursor]:
+    ) -> tuple[list[JobDto], Cursor]:
         (jobs, paginator) = self._job_repository.get_many(
             paginator_token=paginator_token
         )
 
-        cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
-
-        return (jobs, cursor)
+        job_dtos: list[JobDto] = []
+        for job in jobs:
+            chat_logs = self._chat_log_repository.get_many_by_ids(
+                ids=job.chat_log_ids,
+            )
+            cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
+            job_dto = JobDtoTransformer(job=job, chat_logs=chat_logs).transform()
+            job_dtos.append(job_dto)
+        return (job_dtos, cursor)

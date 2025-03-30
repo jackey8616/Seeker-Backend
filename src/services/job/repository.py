@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from bson import ObjectId
+
 from dtos.repository.order_by import OrderBy
 from dtos.repository.paginator import Paginator
 from repository import Repository
@@ -65,3 +67,14 @@ class JobRepository(Repository[Job]):
         if upserted_obj is None:
             return ValueError("Upsert failed")
         return upserted_obj
+
+    def update(self, job: Job):
+        self._table.find_one_and_update(
+            filter={"_id": ObjectId(job.id)},
+            update={
+                "$set": job.model_dump(
+                    by_alias=True,
+                    exclude={"id"},
+                ),
+            },
+        )
