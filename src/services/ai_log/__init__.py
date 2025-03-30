@@ -20,11 +20,9 @@ class AiLogService:
     def get_many_conversation_log_by_executor_id(
         self, executor_id: str, paginator_token: Optional[str] = None
     ) -> tuple[list[DtoAiConversationLog], Cursor]:
-        conversation_logs, paginator = (
-            self._ai_conversation_log_repository.get_many_by_executor_id(
-                executor_id=executor_id,
-                paginator_token=paginator_token,
-            )
+        conversation_logs, paginator = self._ai_conversation_log_repository.get_many(
+            query={"executor_id": executor_id},
+            paginator_token=paginator_token,
         )
 
         dto_logs: list[DtoAiConversationLog] = []

@@ -19,6 +19,7 @@ class Cursor(BaseModel):
                 next_page_token=None,
             )
 
+        has_more = len(sorted_results) > paginator.n
         first_id = sorted_results[0].id
         last_id = sorted_results[len(sorted_results) - 1].id
         assert first_id is not None
@@ -34,5 +35,7 @@ class Cursor(BaseModel):
                 order_by=OrderBy.DESC,
                 n=paginator.n,
                 start_id=last_id,
-            ).encode(),
+            ).encode()
+            if has_more
+            else None,
         )

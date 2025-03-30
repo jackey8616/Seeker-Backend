@@ -43,7 +43,7 @@ class JobService:
         self, executor_id: str, paginator_token: Optional[str] = None
     ) -> tuple[list[JobDto], Cursor]:
         (jobs, paginator) = self._job_repository.get_many(
-            paginator_token=paginator_token
+            query={}, paginator_token=paginator_token
         )
         cursor = Cursor.from_paginator(paginator=paginator, sorted_results=jobs)
 
