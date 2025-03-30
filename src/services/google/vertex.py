@@ -42,7 +42,7 @@ class GoogleVertexService:
                 executor_id=executor_id,
                 model_name=model_name,
                 system_instruction=system_instructions,
-                chats=[],
+                chat_ids=[],
                 total_input_token=0,
                 total_output_token=0,
                 created_at=datetime.now(tz=timezone.utc),
@@ -123,7 +123,7 @@ class GoogleVertexService:
             )
         )
         assert chat_log.id is not None
-        conversation_log.chats.append(chat_log.id)
+        conversation_log.chat_ids.append(chat_log.id)
         conversation_log.total_input_token += chat_log.input_token
         conversation_log.total_output_token += chat_log.output_token
         conversation_log.updated_at = datetime.now(tz=timezone.utc)
