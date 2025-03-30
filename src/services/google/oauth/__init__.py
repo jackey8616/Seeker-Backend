@@ -76,6 +76,8 @@ class GoogleOAuthService:
         user = self._user_service.get_by_id(user_id=user_id)
         if user is None:
             raise ValueError(f"Could not find user with id: {user_id}")
+        elif user.google_credentials is None:
+            raise ValueError(f"User with id: {user_id} has no Google OAuth credentials")
 
         flow = self._get_oauth_flow()
         info = {

@@ -1,6 +1,9 @@
+from urllib.parse import urlparse
+
 from fastapi import APIRouter, HTTPException, Request
 from kink import di
 
+from responses.auth.logout import LogoutResponseDto
 from responses.auth.refresh import RefreshResponseDto
 from services.auth import AuthService
 
@@ -29,3 +32,20 @@ async def refresh(request: Request):
         )
     )
     return response
+
+
+@auth_router.post("/logout")
+async def logout():
+    try:
+        response = LogoutResponseDto().response()
+        response.delete_cookie(
+            key="refresh_token",
+            httponly=True,
+            secure=True,
+            samesite="none",
+            domain=urlparse(di["SERVE_DOMAIN"]).hostname,
+        )
+        return response
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e)) from e

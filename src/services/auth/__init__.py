@@ -35,6 +35,9 @@ class AuthService:
                 userinfo=userinfo,
                 credentials=credentials,
             )
+        else:
+            user.google_credentials = credentials
+            self._user_service.update(user=user)
 
         assert user.id is not None
         payload = TokenData(sub=user.id)

@@ -1,5 +1,7 @@
 from typing import Optional
 
+from bson import ObjectId
+
 from models.user import ModelUser
 from repository import Repository
 
@@ -17,7 +19,7 @@ class UserRepository(Repository[ModelUser]):
 
     def update(self, user: ModelUser):
         self._table.find_one_and_update(
-            filter={"_id": user.id},
+            filter={"_id": ObjectId(user.id)},
             update={
                 "$set": user.model_dump(
                     by_alias=True,
