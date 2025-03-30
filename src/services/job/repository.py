@@ -25,10 +25,11 @@ class JobRepository(Repository[Job]):
             update={
                 "$set": job.model_dump(
                     by_alias=True,
-                    exclude={"id", "created_at"},
+                    exclude={"id", "created_at", "chat_log_ids"},
                 ),
                 "$setOnInsert": {
                     "created_at": job.created_at,
+                    "chat_log_ids": job.chat_log_ids,
                 },
             },
             upsert=True,
