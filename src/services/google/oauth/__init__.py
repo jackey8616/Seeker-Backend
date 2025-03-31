@@ -97,6 +97,8 @@ class GoogleOAuthService:
             raise OAuthExpiredError(
                 "Google OAuth credentials have expired. Please re-authenticate."
             ) from e
+        except OAuthScopeChangedError as e:
+            raise e
         except Exception as e:
             raise ValueError(f"Failed to refresh OAuth credentials: {str(e)}") from e
 
