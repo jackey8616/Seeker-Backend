@@ -8,6 +8,8 @@ on:
 jobs:
   build-n-deploy:
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write
     steps:
       - uses: actions/checkout@v2
 
@@ -34,3 +36,14 @@ jobs:
           tags: |
             clooooode/seeker-backend:${{ github.ref_name }}
             clooooode/seeker-backend:latest
+      
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+
+      - name: Create Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{steps.build_changelog.outputs.changelog}}
+          draft: false
+          prerelease: false
