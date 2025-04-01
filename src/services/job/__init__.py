@@ -7,7 +7,7 @@ from models.job.company import ModelCompany
 from models.job.job import ModelJob
 from repository.ai_chat_log import AiChatLogRepository
 from repository.cursor import Cursor
-from services.job.crawler.dtos import CrawledJob
+from services.job.crawler.factory import CrawlerFactory
 from services.job.dtos.job_dto import JobDto
 from services.job.repository import JobRepository
 from services.job.transformer import JobDtoTransformer
@@ -20,24 +20,36 @@ class JobService:
         default_factory=lambda: AiChatLogRepository()
     )
 
-    def upsert_crawled_job(self, job: CrawledJob) -> ModelJob | ValueError:
+    def upsert_job_from_url(self, link: str) -> ModelJob | ValueError | RuntimeError:
+        crawler = CrawlerFactory.get_crawler(link=link)
+        if crawler is None:
+            return ValueError(f"Crawler for {link} is not found.")
+
+        crawled_job = crawler.crawl()
+        if isinstance(crawled_job, (ValueError, RuntimeError)):
+            return crawled_job
+
         model_company = ModelCompany(
-            name=job.company.name,
-            link=job.company.link,
+            name=crawled_job.company.name,
+            link=crawled_job.company.link,
         )
         model_job = ModelJob(
-            domain=job.domain,
-            url=job.url,
-            title=job.title,
-            location=job.location,
+            domain=crawled_job.domain,
+            url=crawled_job.url,
+            title=crawled_job.title,
+            location=crawled_job.location,
             company=model_company,
-            salary=job.salary,
-            work_type=job.work_type,
-            description=job.description,
-            description_hash=md5(job.description.encode()).hexdigest(),
+            salary=crawled_job.salary,
+            work_type=crawled_job.work_type,
+            description=crawled_job.description,
+            description_hash=md5(crawled_job.description.encode()).hexdigest(),
             updated_at=datetime.now(tz=timezone.utc),
         )
-        return self._job_repository.upsert(job=model_job)
+        model_job = self._job_repository.upsert(job=model_job)
+        if isinstance(model_job, ValueError):
+            return model_job
+        assert model_job.id is not None
+        return model_job
 
     def get_many(
         self, executor_id: str, paginator_token: Optional[str] = None
