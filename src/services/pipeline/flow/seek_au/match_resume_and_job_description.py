@@ -5,7 +5,7 @@ from typing import Any
 from rouge import Rouge
 
 from models.ai.ai_chat_log import ModelAiChatLog
-from services.google.vertex import GoogleVertexService
+from services.ai.ai_service import AiService
 from services.job.repository import JobRepository
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
 
@@ -30,8 +30,8 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
         restriction = data.restriction
         job_ids = data.job_ids
 
-        vertex_service = GoogleVertexService()
-        conversation_id = vertex_service.start_chat(
+        ai_service = AiService()
+        conversation_id = ai_service.start_chat(
             executor_id=executor_id,
             model_name="gemini-1.5-pro",
             system_instructions=[
@@ -65,14 +65,14 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
             assert job.id is not None
 
             job_description = job.description
-            chat_log = vertex_service.chat(
+            chat_log = ai_service.chat(
                 executor_id=executor_id,
                 id=conversation_id,
                 content=f"<JOB_DESCRIPTION>{job.description}</JOB_DESCRIPTION>",
                 with_history=False,
             )
             assert chat_log.id is not None
-            vertex_service.evaluate(
+            ai_service.evaluate(
                 chat_log.id, self._evaluate_summarize(job_description, chat_log)
             )
 
