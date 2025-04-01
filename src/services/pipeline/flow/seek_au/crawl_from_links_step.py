@@ -24,8 +24,8 @@ class CrawlFromLinksStep(Step[CrawlFromLinksDataType]):
                 continue
 
             crawled_job = crawler.crawl()
-            if isinstance(crawled_job, ValueError):
-                warning("Crawling failed", repr(crawled_job))
+            if isinstance(crawled_job, (ValueError, RuntimeError)):
+                warning(f"Crawling failed: {repr(crawled_job)}")
                 continue
 
             model_job = service.upsert_crawled_job(job=crawled_job)

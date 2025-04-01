@@ -14,5 +14,9 @@ class Crawler(ABC):
         return urlparse(url=self.link)
 
     @abstractmethod
-    def crawl(self) -> CrawledJob | ValueError:
+    def crawl(self) -> CrawledJob | ValueError | RuntimeError:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def is_crawlable(self, data: str) -> bool:
         raise NotImplementedError()
