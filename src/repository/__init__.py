@@ -25,7 +25,7 @@ class Repository(ABC, Generic[T]):
 
     @property
     def _client(self):
-        return MongoClient(di["MONGODB_ENDPOINT"])
+        return MongoClient(di["MONGODB_ENDPOINT"], tz_aware=True)
 
     @property
     def _table(self) -> Collection:
