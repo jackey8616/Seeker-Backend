@@ -3,11 +3,11 @@ from datetime import datetime, timezone
 from hashlib import md5
 from typing import Optional
 
-from models.job import ModelJob
+from models.job.company import ModelCompany
+from models.job.job import ModelJob
 from repository.ai_chat_log import AiChatLogRepository
 from repository.cursor import Cursor
 from services.job.crawler.dtos import CrawledJob
-from services.job.dtos.company import Company
 from services.job.dtos.job_dto import JobDto
 from services.job.repository import JobRepository
 from services.job.transformer import JobDtoTransformer
@@ -21,7 +21,7 @@ class JobService:
     )
 
     def upsert_crawled_job(self, job: CrawledJob) -> ModelJob | ValueError:
-        model_company = Company(
+        model_company = ModelCompany(
             name=job.company.name,
             link=job.company.link,
         )

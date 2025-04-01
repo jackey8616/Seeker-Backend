@@ -2,7 +2,7 @@ from typing import Optional
 
 from bson import ObjectId
 
-from models.ai_conversation_log import ModelAiConversationLog
+from models.ai.ai_conversation_log import ModelAiConversationLog
 from repository import Repository
 
 

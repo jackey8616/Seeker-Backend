@@ -3,7 +3,7 @@ from typing import Optional
 
 from bson import ObjectId
 
-from models.job import ModelJob
+from models.job.job import ModelJob
 from repository import Repository
 
 

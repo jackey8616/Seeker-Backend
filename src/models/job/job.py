@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from pydantic import Field
 
 from models import MongoDocument
-from services.job.dtos.company import Company
+from models.job.company import ModelCompany
 from utils.typings import PyObjectId
 
 
@@ -12,7 +12,7 @@ class ModelJob(MongoDocument):
     url: str
     title: str
     location: str
-    company: Company
+    company: ModelCompany
     salary: str
     work_type: str
     description: str

@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from models.ai_conversation_log import ModelAiConversationLog
+from models.ai.ai_conversation_log import ModelAiConversationLog
 from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
 from repository.cursor import Cursor
-from services.ai_log.dtos import AiConversationLog as DtoAiConversationLog
+from services.ai.dtos.ai_conversation_log import (
+    AiConversationLog as DtoAiConversationLog,
+)
 
 
 @dataclass

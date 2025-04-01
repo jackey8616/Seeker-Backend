@@ -1,35 +1,25 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Optional
 
 from kink import di
 from vertexai import init
 from vertexai.generative_models import Content, GenerativeModel, Part
 
-from models.ai_chat_log import ModelAiChatLog
-from models.ai_conversation_log import ModelAiConversationLog
-from repository.ai_chat_log import AiChatLogRepository
-from repository.ai_conversation_log import AiConversationLogRepository
+from models.ai.ai_chat_log import ModelAiChatLog
+from models.ai.ai_conversation_log import ModelAiConversationLog
 
 
 @dataclass
 class GoogleVertexService:
-    _chat_log_repository: AiChatLogRepository = field(
-        default_factory=lambda: AiChatLogRepository()
-    )
-    _conversation_log_repository: AiConversationLogRepository = field(
-        default_factory=lambda: AiConversationLogRepository()
-    )
-
     def __post_init__(self):
         init(project=di["GOOGLE_GCP_PROJECT_ID"], location=di["GOOGLE_GCP_REGION"])
 
     def start_chat(
         self,
-        executor_id: str,
         model_name: str,
         system_instructions: list[str],
-    ) -> str:
+    ) -> None:
         model = GenerativeModel(
             model_name=model_name,
             system_instruction=[
@@ -37,41 +27,15 @@ class GoogleVertexService:
             ],
         )
         model.start_chat()
-        conversation_log = self._conversation_log_repository.insert_one(
-            obj=ModelAiConversationLog(
-                executor_id=executor_id,
-                model_name=model_name,
-                system_instruction=system_instructions,
-                chat_ids=[],
-                total_input_token=0,
-                total_output_token=0,
-                created_at=datetime.now(tz=timezone.utc),
-            )
-        )
-        assert conversation_log.id is not None
-        return conversation_log.id
 
     def chat(
         self,
         executor_id: str,
-        id: str,
         content: str,
-        model_name: Optional[str] = None,
-        system_instructions: Optional[list[str]] = None,
-        with_history: bool = True,
+        conversation_log: ModelAiConversationLog,
+        chat_history: Optional[list[ModelAiChatLog]] = None,
     ) -> ModelAiChatLog:
-        conversation_log = self._conversation_log_repository.get_by_executor_id_and_id(
-            executor_id=executor_id, id=id
-        )
-        if conversation_log is None:
-            raise ValueError("Conversation not exists")
         assert conversation_log.id is not None
-
-        if model_name is not None:
-            conversation_log.model_name = model_name
-        if system_instructions is not None:
-            conversation_log.system_instruction = system_instructions
-
         model = GenerativeModel(
             model_name=conversation_log.model_name,
             system_instruction=[
@@ -80,13 +44,8 @@ class GoogleVertexService:
             ],
         )
         history = []
-        if with_history is True:
-            conversation_chats = (
-                self._chat_log_repository.get_many_by_conversation_id_and_executor_id(
-                    conversation_id=conversation_log.id, executor_id=executor_id
-                )
-            )
-            for chat in conversation_chats:
+        if chat_history is not None:
+            for chat in chat_history:
                 history.append(
                     Content.from_dict(
                         {
@@ -110,32 +69,13 @@ class GoogleVertexService:
         candidates = response.candidates
         usage_metadata = response.usage_metadata
         end_datetime = datetime.now(tz=timezone.utc)
-        chat_log = self._chat_log_repository.insert_one(
-            obj=ModelAiChatLog(
-                executor_id=executor_id,
-                conversation_id=conversation_log.id,
-                input=content,
-                output=candidates.pop().content.parts.pop().text,
-                input_token=usage_metadata.prompt_token_count,
-                output_token=usage_metadata.candidates_token_count,
-                start_datetime=start_datetime,
-                end_datetime=end_datetime,
-            )
+        return ModelAiChatLog(
+            executor_id=executor_id,
+            conversation_id=conversation_log.id,
+            input=content,
+            output=candidates.pop().content.parts.pop().text,
+            input_token=usage_metadata.prompt_token_count,
+            output_token=usage_metadata.candidates_token_count,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
         )
-        assert chat_log.id is not None
-        conversation_log.chat_ids.append(chat_log.id)
-        conversation_log.total_input_token += chat_log.input_token
-        conversation_log.total_output_token += chat_log.output_token
-        conversation_log.updated_at = datetime.now(tz=timezone.utc)
-        self._conversation_log_repository.update(conversation_log)
-        return chat_log
-
-    def evaluate(self, chat_log_id: str, metrics: dict[str, Any]) -> ModelAiChatLog:
-        chat_log = self._chat_log_repository.get_by_id(id=chat_log_id)
-        if chat_log is None:
-            raise ValueError("Chat not exists")
-        assert chat_log.id is not None
-
-        chat_log.metrics = metrics
-        self._chat_log_repository.update(chat_log)
-        return chat_log

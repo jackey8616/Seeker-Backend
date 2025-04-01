@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from models.ai_chat_log import ModelAiChatLog
+from models.ai.ai_chat_log import ModelAiChatLog
 
 
 class AiConversationLog(BaseModel):

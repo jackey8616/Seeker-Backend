@@ -1,6 +1,6 @@
 from bson import ObjectId
 
-from models.ai_chat_log import ModelAiChatLog
+from models.ai.ai_chat_log import ModelAiChatLog
 from repository import Repository
 
 

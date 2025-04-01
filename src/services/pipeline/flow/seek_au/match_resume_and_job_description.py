@@ -4,7 +4,7 @@ from typing import Any
 
 from rouge import Rouge
 
-from models.ai_chat_log import ModelAiChatLog
+from models.ai.ai_chat_log import ModelAiChatLog
 from services.google.vertex import GoogleVertexService
 from services.job.repository import JobRepository
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType

@@ -6,7 +6,7 @@ from responses.conversation_log.get_conversation_log import (
 from responses.conversation_log.get_conversation_logs import (
     GetConversationLogsResponseDto,
 )
-from services.ai_log import AiLogService
+from services.ai.ai_log_service import AiLogService
 from services.auth.auth_bearer import JwtBearer
 from services.auth.dtos.token import TokenData
 

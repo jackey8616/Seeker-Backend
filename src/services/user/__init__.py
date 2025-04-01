@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from models.user import ModelUser
+from models.user.user import ModelUser
 from repository.user import UserRepository
 from services.google.oauth.dtos.google_credentials import GoogleCredentials
 from services.google.oauth.dtos.google_user_info import GoogleUserInfo

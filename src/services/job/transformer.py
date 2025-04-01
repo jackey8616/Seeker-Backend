@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from models.ai_chat_log import ModelAiChatLog
-from models.job import ModelJob
+from models.ai.ai_chat_log import ModelAiChatLog
+from models.job.job import ModelJob
 from services.job.dtos.job_dto import JobDto
 
 

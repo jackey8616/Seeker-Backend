@@ -2,7 +2,7 @@ from typing import Optional
 
 from bson import ObjectId
 
-from models.user import ModelUser
+from models.user.user import ModelUser
 from repository import Repository
 
 
