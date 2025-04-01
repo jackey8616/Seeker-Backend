@@ -51,7 +51,7 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
                 "<negative-comment>... Negative comment wrap in negative-comment tag...</negative-comment>",
                 "",
                 "# Fit Rate",
-                "N/100 (N is number from 0 up to 100, if you can't rate, just set N to 0)",
+                "<fit-rate>N/100</fit-rate> (N is number from 0 up to 100, if you can't rate, just set N to 0)",
                 "</FORMAT>",
             ],
         )
