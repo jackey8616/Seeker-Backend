@@ -94,3 +94,17 @@ async def mail_fitting_by_ai(
             }
         )
     )
+
+
+@mails_router.post("/{thread_id}/read")
+async def mark_thread_read(
+    thread_id: str,
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
+):
+    user_id = token_data.sub
+    oauth_credentials = GoogleOAuthService().get_oauth_credentials(user_id=user_id)
+    GoogleMailService().mark_thread_read(
+        credentials=oauth_credentials,
+        thread_id=thread_id,
+    )
+    return JSONResponse(content={"status": "success"})

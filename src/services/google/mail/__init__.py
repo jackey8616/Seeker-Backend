@@ -28,6 +28,20 @@ class GoogleMailService:
                 return label
         return None
 
+    def mark_thread_read(
+        self, credentials: GoogleOAuthCredentials, thread_id: str
+    ) -> None:
+        """Mark a thread as read by removing the UNREAD label.
+
+        Args:
+            credentials: Google OAuth credentials
+            thread_id: The ID of the thread to mark as read
+        """
+        service = self._build_service(credentials=credentials)
+        service.users().threads().modify(
+            userId="me", id=thread_id, body={"removeLabelIds": ["UNREAD"]}
+        ).execute()
+
     def list_threads(
         self,
         credentials: GoogleOAuthCredentials,
