@@ -23,14 +23,3 @@ class AiConversationLogRepository(Repository[ModelAiConversationLog]):
         if raw_document is None:
             return None
         return ModelAiConversationLog.model_validate(obj=raw_document)
-
-    def update(self, ai_conversation_log: ModelAiConversationLog):
-        self._table.find_one_and_update(
-            filter={"_id": ObjectId(ai_conversation_log.id)},
-            update={
-                "$set": ai_conversation_log.model_dump(
-                    by_alias=True,
-                    exclude={"id"},
-                ),
-            },
-        )

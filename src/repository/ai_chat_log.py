@@ -28,14 +28,3 @@ class AiChatLogRepository(Repository[ModelAiChatLog]):
             ModelAiChatLog.model_validate(obj=raw_document)
             for raw_document in raw_documents
         ]
-
-    def update(self, ai_chat_log: ModelAiChatLog):
-        self._table.find_one_and_update(
-            filter={"_id": ObjectId(ai_chat_log.id)},
-            update={
-                "$set": ai_chat_log.model_dump(
-                    by_alias=True,
-                    exclude={"id"},
-                ),
-            },
-        )

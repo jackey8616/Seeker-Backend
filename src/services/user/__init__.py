@@ -28,4 +28,4 @@ class UserService:
         )
 
     def update(self, user: ModelUser):
-        self._user_repository.update(user=user)
+        self._user_repository.update(obj=user)

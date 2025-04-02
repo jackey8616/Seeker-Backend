@@ -5,8 +5,8 @@ from typing import Any
 from rouge import Rouge
 
 from models.ai.ai_chat_log import ModelAiChatLog
+from repository.job import JobRepository
 from services.ai.ai_service import AiService
-from services.job.repository import JobRepository
 from services.pipeline.step import FinalStep, NextStep, Step, StepDataType
 
 

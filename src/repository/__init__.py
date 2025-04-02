@@ -4,14 +4,15 @@ from typing import ClassVar, Generic, Optional, TypeVar, cast, get_args
 
 from bson import ObjectId
 from kink import di
-from pydantic import BaseModel, TypeAdapter
+from pydantic import TypeAdapter
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
+from models import MongoDocument
 from repository.order_by import OrderBy
 from repository.paginator import Paginator
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T", bound=MongoDocument)
 
 
 @dataclass
@@ -94,4 +95,15 @@ class Repository(ABC, Generic[T]):
                 for raw_document in raw_documents
             ],
             paginator,
+        )
+
+    def update(self, obj: T):
+        self._table.find_one_and_update(
+            filter={"_id": ObjectId(obj.id)},
+            update={
+                "$set": obj.model_dump(
+                    by_alias=True,
+                    exclude={"id"},
+                ),
+            },
         )

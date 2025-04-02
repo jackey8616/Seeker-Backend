@@ -7,9 +7,9 @@ from models.job.company import ModelCompany
 from models.job.job import ModelJob
 from repository.ai_chat_log import AiChatLogRepository
 from repository.cursor import Cursor
+from repository.job import JobRepository
 from services.job.crawler.factory import CrawlerFactory
 from services.job.dtos.job_dto import JobDto
-from services.job.repository import JobRepository
 from services.job.transformer import JobDtoTransformer
 
 

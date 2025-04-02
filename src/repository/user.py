@@ -1,7 +1,5 @@
 from typing import Optional
 
-from bson import ObjectId
-
 from models.user.user import ModelUser
 from repository import Repository
 
@@ -16,14 +14,3 @@ class UserRepository(Repository[ModelUser]):
         if raw_user is None:
             return None
         return ModelUser.model_validate(obj=raw_user)
-
-    def update(self, user: ModelUser):
-        self._table.find_one_and_update(
-            filter={"_id": ObjectId(user.id)},
-            update={
-                "$set": user.model_dump(
-                    by_alias=True,
-                    exclude={"id"},
-                ),
-            },
-        )
