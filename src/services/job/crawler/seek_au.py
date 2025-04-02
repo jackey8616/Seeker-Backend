@@ -3,7 +3,7 @@ from json import dumps, loads
 from re import findall, search
 from typing import Optional
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from requests import get
 
 from services.job.crawler import Crawler
@@ -65,6 +65,8 @@ class SeekAuCrawler(Crawler):
             details_el = soup.find(attrs={"data-automation": "jobAdDetails"})
             if details_el is None:
                 return ValueError(f"Details element is None: {url}")
+            assert isinstance(details_el, Tag)
+            raw_details = details_el.decode_contents()
             details = details_el.text
 
             return CrawledJob(
@@ -76,6 +78,7 @@ class SeekAuCrawler(Crawler):
                 work_type=work_type,
                 salary=salary,
                 description=details,
+                raw_description=raw_details,
             )
         except Exception as e:
             return RuntimeError(

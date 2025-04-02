@@ -7,6 +7,7 @@ from models.job.company import ModelCompany
 
 
 class JobDto(BaseModel):
+    id: str
     domain: str
     url: str
     title: str
@@ -15,6 +16,7 @@ class JobDto(BaseModel):
     salary: str
     work_type: str
     description: str
+    raw_description: str
     description_hash: str
     updated_at: datetime
     created_at: datetime = Field(default=datetime.now(tz=timezone.utc))

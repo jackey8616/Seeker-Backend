@@ -17,3 +17,4 @@ class CrawledJob(BaseModel):
     work_type: str
     salary: str
     description: str
+    raw_description: str

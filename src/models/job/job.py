@@ -17,6 +17,7 @@ class ModelJob(MongoDocument):
     work_type: str
     description: str
     description_hash: str
+    raw_description: str
     updated_at: datetime
     created_at: datetime = Field(default=datetime.now(tz=timezone.utc))
     chat_log_ids: list[PyObjectId] = Field(default=[])

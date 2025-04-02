@@ -15,7 +15,9 @@ class JobDtoTransformer:
         chat_logs = [
             chat_log_maps[chat_log_id] for chat_log_id in self.job.chat_log_ids
         ]
+        assert self.job.id is not None
         return JobDto(
+            id=self.job.id,
             domain=self.job.domain,
             url=self.job.url,
             title=self.job.title,
@@ -24,6 +26,7 @@ class JobDtoTransformer:
             salary=self.job.salary,
             work_type=self.job.work_type,
             description=self.job.description,
+            raw_description=self.job.raw_description,
             description_hash=self.job.description_hash,
             updated_at=self.job.updated_at,
             created_at=self.job.created_at,

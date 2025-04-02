@@ -42,6 +42,7 @@ class JobService:
             salary=crawled_job.salary,
             work_type=crawled_job.work_type,
             description=crawled_job.description,
+            raw_description=crawled_job.raw_description,
             description_hash=md5(crawled_job.description.encode()).hexdigest(),
             updated_at=datetime.now(tz=timezone.utc),
         )
@@ -50,6 +51,17 @@ class JobService:
             return model_job
         assert model_job.id is not None
         return model_job
+
+    def get_by_id(self, executor_id: str, job_id: str) -> JobDto | None:
+        model_job = self._job_repository.get_by_id(id=job_id)
+        if model_job is None:
+            return None
+
+        chat_logs = self._chat_log_repository.get_many_by_ids(
+            ids=model_job.chat_log_ids, executor_id=executor_id
+        )
+
+        return JobDtoTransformer(job=model_job, chat_logs=chat_logs).transform()
 
     def get_many(
         self, executor_id: str, paginator_token: Optional[str] = None
