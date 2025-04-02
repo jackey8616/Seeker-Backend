@@ -4,7 +4,9 @@ from fastapi.responses import JSONResponse
 
 from request.job.crawl_job import CrawlJobRequestDto
 from request.job.get_jobs import GetJobsRequestDto
+from request.job.job_fitting_ai_by_url import JobFittingAiByUrlRequestDto
 from responses.job.crawl_job import CrawlJobResponseDto
+from responses.job.fitting_ai_by_url import JobFittingAiByUrlResponseDto
 from responses.job.get_job import GetJobResponseDto
 from responses.job.get_jobs import GetJobsResponseDto
 from services.auth.auth_bearer import JwtBearer
@@ -52,8 +54,47 @@ async def crawl_job(
     return CrawlJobResponseDto(job=model_job).response()
 
 
+@jobs_router.post(
+    path="/fitting_by_ai/url",
+    response_model=JobFittingAiByUrlResponseDto,
+)
+async def fitting_ai_by_url(
+    request: JobFittingAiByUrlRequestDto,
+    token_data: TokenData = Depends(JwtBearer(TokenData)),
+    job_service: JobService = Depends(lambda: JobService()),
+):
+    user_id = token_data.sub
+    model_job = job_service.upsert_job_from_url(link=request.url)
+    if isinstance(model_job, (ValueError, RuntimeError)):
+        raise ValueError(str(model_job))
+
+    assert model_job.id is not None
+    step = MatchResumeAndJobDescriptionStep()
+    result = step.perform(
+        data=MatchResumeAndJobDescriptionDataType(
+            executor_id=user_id,
+            restriction=request.restriction,
+            resume=request.resume,
+            job_ids=[model_job.id],
+        ),
+        next=lambda x: x,
+        final=lambda x: x,
+    )
+
+    if isinstance(result, Exception):
+        raise result
+
+    data = result["fitting_result"][0]
+    return JobFittingAiByUrlResponseDto(
+        job_id=data["job_id"],
+        chat_log_id=data["chat_log_id"],
+        link=data["link"],
+        ai_response=data["ai_response"],
+    ).response()
+
+
 @jobs_router.post("/fitting_by_ai/{job_id}")
-async def mail_fitting_by_ai(
+async def fitting_ai_by_id(
     job_id: str,
     request: Request,
     token_data: TokenData = Depends(JwtBearer(TokenData)),

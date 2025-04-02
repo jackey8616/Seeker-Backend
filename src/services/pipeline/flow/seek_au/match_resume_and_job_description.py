@@ -82,8 +82,10 @@ class MatchResumeAndJobDescriptionStep(Step[MatchResumeAndJobDescriptionDataType
 
             fitting_results.append(
                 {
+                    "job_id": job.id,
+                    "chat_log_id": chat_log.id,
                     "link": job.url,
-                    "response": chat_log.output,
+                    "ai_response": chat_log.output,
                 }
             )
 
