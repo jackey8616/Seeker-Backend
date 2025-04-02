@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 from pydantic import BaseModel, Field
 
-from models.ai.ai_chat_log import ModelAiChatLog
 from models.job.company import ModelCompany
+from services.ai.dtos.ai_chat_log_dto import AiChatLogDto
 
 
 class JobDto(BaseModel):
@@ -20,4 +20,4 @@ class JobDto(BaseModel):
     description_hash: str
     updated_at: datetime
     created_at: datetime = Field(default=datetime.now(tz=timezone.utc))
-    chat_logs: list[ModelAiChatLog] = Field(default=[])
+    chat_logs: list[AiChatLogDto] = Field(default=[])

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from models.ai.ai_chat_log import ModelAiChatLog
 from models.job.job import ModelJob
+from services.ai.transformer import AiChatLogDtoTransformer
 from services.job.dtos.job_dto import JobDto
 
 
@@ -11,10 +12,11 @@ class JobDtoTransformer:
     chat_logs: list[ModelAiChatLog]
 
     def transform(self) -> JobDto:
-        chat_log_maps = {chat_log.id: chat_log for chat_log in self.chat_logs}
-        chat_logs = [
-            chat_log_maps[chat_log_id] for chat_log_id in self.job.chat_log_ids
+        chat_log_dtos = [
+            AiChatLogDtoTransformer(chat_log=chat_log).transform()
+            for chat_log in self.chat_logs
         ]
+
         assert self.job.id is not None
         return JobDto(
             id=self.job.id,
@@ -30,5 +32,5 @@ class JobDtoTransformer:
             description_hash=self.job.description_hash,
             updated_at=self.job.updated_at,
             created_at=self.job.created_at,
-            chat_logs=chat_logs,
+            chat_logs=chat_log_dtos,
         )
