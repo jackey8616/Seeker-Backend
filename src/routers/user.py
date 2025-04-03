@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from kink import di
 
+from responses.user.info import GetUserInfoResponseDto
 from services.auth.auth_bearer import JwtBearer
 from services.auth.dtos.token import TokenData
-from services.auth.dtos.userinfo import Userinfo
 from services.user import UserService
 
 users_router = APIRouter(
@@ -14,15 +12,14 @@ users_router = APIRouter(
 )
 
 
-@users_router.get("/info")
+@users_router.get(
+    path="/info",
+    response_model=GetUserInfoResponseDto,
+)
 async def info(
     token_data: TokenData = Depends(JwtBearer(TokenData)),
     user_service: UserService = Depends(lambda: di[UserService]),
 ):
     user_id = token_data.sub
-    user = user_service.get_by_id(user_id=user_id)
-    if user is None:
-        userinfo = {}
-    else:
-        userinfo = Userinfo(name=user.google_userinfo.name)
-    return JSONResponse(content=jsonable_encoder(userinfo))
+    userinfo = user_service.get_user_info(user_id=user_id)
+    return GetUserInfoResponseDto(userinfo=userinfo).response()

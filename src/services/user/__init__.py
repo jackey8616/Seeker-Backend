@@ -3,6 +3,8 @@ from typing import Optional
 
 from models.user.user import ModelUser
 from repository.user import UserRepository
+from services.ai.quota.examinator.ai_quota import AiQuotaStrategyExaminator
+from services.auth.dtos.userinfo import Userinfo
 from services.google.oauth.dtos.google_credentials import GoogleCredentials
 from services.google.oauth.dtos.google_user_info import GoogleUserInfo
 
@@ -29,3 +31,26 @@ class UserService:
 
     def update(self, user: ModelUser):
         self._user_repository.update(obj=user)
+
+    def get_user_info(self, user_id: str) -> Optional[Userinfo]:
+        user = self._user_repository.get_by_id(id=user_id)
+        if user is None:
+            return None
+
+        if user.execution_count is None:
+            return Userinfo(
+                name=user.google_userinfo.name,
+                avatar_url=user.google_userinfo.picture,
+                execution_count=user.execution_count,
+            )
+
+        strategy_examinator = AiQuotaStrategyExaminator(executor=user)
+        user.execution_count.remaining_quotas["ai"] = strategy_examinator.get_quotas()
+        self.update(user)
+        user = self._user_repository.get_by_id(id=user_id)
+        assert user is not None
+        return Userinfo(
+            name=user.google_userinfo.name,
+            avatar_url=user.google_userinfo.picture,
+            execution_count=user.execution_count,
+        )
