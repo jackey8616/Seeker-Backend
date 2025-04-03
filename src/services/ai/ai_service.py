@@ -14,7 +14,7 @@ from services.user import UserService
 
 @dataclass
 class AiService:
-    _threshold_of_execution_count_per_day: int = 48
+    _threshold_of_execution_count_per_day: int = 10
     _chat_log_repository: AiChatLogRepository = field(
         default_factory=lambda: AiChatLogRepository()
     )
