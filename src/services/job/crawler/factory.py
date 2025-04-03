@@ -3,6 +3,7 @@ from typing import ClassVar, Mapping, Optional, Type
 from urllib.parse import urlparse
 
 from services.job.crawler import Crawler
+from services.job.crawler.cake_me import CakeMeCrawler
 from services.job.crawler.seek_au import SeekAuCrawler
 
 
@@ -10,6 +11,7 @@ from services.job.crawler.seek_au import SeekAuCrawler
 class CrawlerFactory:
     mapping: ClassVar[Mapping[str, Type[Crawler]]] = {
         "www.seek.com.au": SeekAuCrawler,
+        "www.cake.me": CakeMeCrawler,
     }
 
     @staticmethod
