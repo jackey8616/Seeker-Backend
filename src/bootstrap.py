@@ -22,6 +22,10 @@ def bootstrap_di(dotenv_path: str = ".env"):
     )
     di["GOOGLE_GCP_PROJECT_ID"] = getenv("GOOGLE_GCP_PROJECT_ID")
     di["GOOGLE_GCP_REGION"] = getenv("GOOGLE_GCP_REGION")
+    maximum_ai_chat_record_limit = getenv("MAXIMUM_AI_CHAT_RECORD_LIMIT")
+    if maximum_ai_chat_record_limit is None:
+        raise RuntimeError("MAXIMUM_AI_CHAT_RECORD_LIMIT is not set")
+    di["MAXIMUM_AI_CHAT_RECORD_LIMIT"] = int(maximum_ai_chat_record_limit)
 
     di[UserService] = UserService()
     di[GoogleOAuthService] = GoogleOAuthService()
