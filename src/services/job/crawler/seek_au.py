@@ -89,34 +89,39 @@ class SeekAuCrawler(Crawler):
         return "This job is no longer advertised" not in data
 
     def _extract_company_link(self, raw_html: str) -> Optional[str] | ValueError:
-        link = self.url.geturl()
-        app_config = search(r"window\.SEEK_APP_CONFIG = (.*?)\n", raw_html)
-        if app_config is None:
+        try:
+            link = self.url.geturl()
+            app_config = search(r"window\.SEEK_APP_CONFIG = (.*?)\n", raw_html)
+            if app_config is None:
+                return ValueError(
+                    f"Unable to crawl data from given link {link}: missing SEEK_APP_CONFIG"
+                )
+            config_data = loads(app_config.group(1)[:-1])
+            source_zone = config_data["zone"]
+
+            searched_data = search(r"window\.SEEK_APOLLO_DATA = (.*?)\n", raw_html)
+            if searched_data is None:
+                return ValueError(
+                    f"Unable to crawl data from given link {link}: missing SEEK_APOLLO_DATA"
+                )
+
+            data = loads(searched_data.group(1)[:-1])
+
+            job_id = findall(r"\d+", link)[0]
+            job_index = dumps({"id": job_id}).replace(" ", "")
+
+            root = data["ROOT_QUERY"]
+            job_detail = root[f"jobDetails:{job_index}"]
+            zone = {"zone": source_zone}
+            zone_index = dumps(zone).replace(" ", "")
+
+            company_profile_name = job_detail[f"companyProfile({zone_index})"]
+            company_link = None
+            if company_profile_name is not None:
+                company_profile = data[company_profile_name["__ref"]]
+                company_link = f"{self.url.scheme}://{self.url.hostname}/companies/{company_profile['companyNameSlug']}/"
+            return company_link
+        except Exception as e:
             return ValueError(
-                f"Unable to crawl data from given link {link}: missing SEEK_APP_CONFIG"
+                f"Failed to crawl data from given link {self.url.geturl()}: {e}"
             )
-        config_data = loads(app_config.group(1)[:-1])
-        source_zone = config_data["zone"]
-
-        searched_data = search(r"window\.SEEK_APOLLO_DATA = (.*?)\n", raw_html)
-        if searched_data is None:
-            return ValueError(
-                f"Unable to crawl data from given link {link}: missing SEEK_APOLLO_DATA"
-            )
-
-        data = loads(searched_data.group(1)[:-1])
-
-        job_id = findall(r"\d+", link).pop()
-        job_index = dumps({"id": job_id}).replace(" ", "")
-
-        root = data["ROOT_QUERY"]
-        job_detail = root[f"jobDetails:{job_index}"]
-        zone = {"zone": source_zone}
-        zone_index = dumps(zone).replace(" ", "")
-
-        company_profile_name = job_detail[f"companyProfile({zone_index})"]
-        company_link = None
-        if company_profile_name is not None:
-            company_profile = data[company_profile_name["__ref"]]
-            company_link = f"{self.url.scheme}://{self.url.hostname}/companies/{company_profile['companyNameSlug']}/"
-        return company_link
