@@ -6,6 +6,10 @@ on:
       - '**'
 
 jobs:
+  tests:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+
   build-n-deploy:
     runs-on: ubuntu-latest
     permissions: 

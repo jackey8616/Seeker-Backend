@@ -6,3 +6,4 @@ mongo-data/
 *.pyc
 *.pem
 *credentials.json
+.coverage

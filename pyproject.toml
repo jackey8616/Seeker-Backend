@@ -28,6 +28,27 @@ ruff = "^0.9.5"
 pre-commit = "^4.1.0"
 isort = "^6.0.0"
 poetry-plugin-export = "^1.9.0"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.0"
+
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+  "-ra",
+  "-q",
+  "--cov=src",
+  "--cov-report=term-missing",
+  "--cov-report=html",
+]
+minversion = 6.0
+pythonpath = "src"
+python_files = "test_*.py"
+python_functions = "test_*"
+testpaths = [
+  "tests/",
+]
+
 
 [tool.ruff]
 target-version = "py313"
