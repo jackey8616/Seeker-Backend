@@ -3,15 +3,15 @@ from datetime import datetime, timedelta, timezone
 
 from models.user.execution_count import ModelExecutionCount
 from models.user.quota import ModelQuota
-from services.ai.quota import QuotaStrategy
+from services.quota import QuotaStrategy
 
 
 @dataclass
-class MonthlyQuotaStrategy(QuotaStrategy):
-    """Strategy that limits AI service usage to a certain number of calls per month."""
+class HourlyQuotaStrategy(QuotaStrategy):
+    """Strategy that limits AI service usage to a certain number of calls per hour."""
 
-    def __init__(self, monthly_limit: int):
-        super().__init__(name="monthly", amount=monthly_limit)
+    def __init__(self, hourly_limit: int):
+        super().__init__(name="hourly", amount=hourly_limit)
 
     def is_exceed(self, execution_count: ModelExecutionCount) -> bool:
         nearest_execution_datetimes = sorted(
@@ -20,13 +20,13 @@ class MonthlyQuotaStrategy(QuotaStrategy):
         if nearest_execution_datetimes is None or len(nearest_execution_datetimes) == 0:
             return False
 
-        previous_month_execution_datetimes = [
+        previous_hour_execution_datetimes = [
             dt
             for dt in nearest_execution_datetimes
-            if dt >= (datetime.now(tz=timezone.utc) - timedelta(days=30))
+            if dt >= (datetime.now(tz=timezone.utc) - timedelta(hours=1))
         ]
 
-        return len(previous_month_execution_datetimes) >= self.amount
+        return len(previous_hour_execution_datetimes) >= self.amount
 
     def get_quota(self, execution_count: ModelExecutionCount) -> ModelQuota:
         nearest_execution_datetimes = sorted(
@@ -37,13 +37,13 @@ class MonthlyQuotaStrategy(QuotaStrategy):
                 name=self.name, maximum_amount=self.amount, remaining_amount=self.amount
             )
 
-        previous_month_execution_datetimes = [
+        previous_hour_execution_datetimes = [
             dt
             for dt in nearest_execution_datetimes
-            if dt >= (datetime.now(tz=timezone.utc) - timedelta(days=30))
+            if dt >= (datetime.now(tz=timezone.utc) - timedelta(hours=1))
         ]
 
-        used_quota = len(previous_month_execution_datetimes)
+        used_quota = len(previous_hour_execution_datetimes)
         return ModelQuota(
             name=self.name,
             maximum_amount=self.amount,

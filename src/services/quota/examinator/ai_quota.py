@@ -3,11 +3,11 @@ from dataclasses import dataclass, field
 from kink import di
 
 from models.user.user import ModelUser
-from services.ai.quota import QuotaStrategy
-from services.ai.quota.basic_strategies.daily_quota import DailyQuotaStrategy
-from services.ai.quota.basic_strategies.hourly_quota import HourlyQuotaStrategy
-from services.ai.quota.basic_strategies.monthly_quota import MonthlyQuotaStrategy
-from services.ai.quota.examinator import QuotaExaminator
+from services.quota import QuotaStrategy
+from services.quota.basic_strategies.daily_quota import DailyQuotaStrategy
+from services.quota.basic_strategies.hourly_quota import HourlyQuotaStrategy
+from services.quota.basic_strategies.monthly_quota import MonthlyQuotaStrategy
+from services.quota.examinator import QuotaExaminator
 
 
 @dataclass

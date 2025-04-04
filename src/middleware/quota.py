@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from services.ai.quota.exceptions import ExecutionQuotaExceedError
+from services.quota.exceptions import ExecutionQuotaExceedError
 
 
 class QuotaErrorMiddleware(BaseHTTPMiddleware):

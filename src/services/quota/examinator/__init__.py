@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from models.user.execution_count import ModelExecutionCount
 from models.user.quota import ModelQuota
 from models.user.user import ModelUser
-from services.ai.quota import QuotaStrategy
-from services.ai.quota.exceptions import ExecutionQuotaExceedError
+from services.quota import QuotaStrategy
+from services.quota.exceptions import ExecutionQuotaExceedError
 
 
 @dataclass

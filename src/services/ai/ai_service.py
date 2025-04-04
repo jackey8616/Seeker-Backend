@@ -10,8 +10,8 @@ from models.user.execution_count import ModelExecutionCount
 from models.user.user import ModelUser
 from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
-from services.ai.quota.examinator.ai_quota import AiQuotaStrategyExaminator
 from services.google.vertex import GoogleVertexService
+from services.quota.examinator.ai_quota import AiQuotaStrategyExaminator
 from services.user import UserService
 
 

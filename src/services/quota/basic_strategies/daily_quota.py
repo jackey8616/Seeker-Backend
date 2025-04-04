@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from models.user.execution_count import ModelExecutionCount
 from models.user.quota import ModelQuota
-from services.ai.quota import QuotaStrategy
+from services.quota import QuotaStrategy
 
 
 @dataclass
