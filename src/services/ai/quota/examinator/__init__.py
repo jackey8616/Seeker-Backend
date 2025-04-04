@@ -16,7 +16,7 @@ class QuotaExaminator(ABC):
 
     def is_exceed(self) -> bool:
         if self.executor.execution_count is None:
-            return True
+            return False
         return any(
             strategy.is_exceed(self.executor.execution_count)
             for strategy in self.strategies
