@@ -27,6 +27,21 @@ def bootstrap_di(dotenv_path: str = ".env"):
         raise RuntimeError("MAXIMUM_AI_CHAT_RECORD_LIMIT is not set")
     di["MAXIMUM_AI_CHAT_RECORD_LIMIT"] = int(maximum_ai_chat_record_limit)
 
+    ai_quota_hourly_limit = getenv("AI_QUOTA_HOURLY_LIMIT")
+    if ai_quota_hourly_limit is None:
+        raise RuntimeError("AI_QUOTA_HOURLY_LIMIT is not set")
+    di["AI_QUOTA_HOURLY_LIMIT"] = int(ai_quota_hourly_limit)
+
+    ai_quota_daily_limit = getenv("AI_QUOTA_DAILY_LIMIT")
+    if ai_quota_daily_limit is None:
+        raise RuntimeError("AI_QUOTA_DAILY_LIMIT is not set")
+    di["AI_QUOTA_DAILY_LIMIT"] = int(ai_quota_daily_limit)
+
+    ai_quota_monthly_limit = getenv("AI_QUOTA_MONTHLY_LIMIT")
+    if ai_quota_monthly_limit is None:
+        raise RuntimeError("AI_QUOTA_MONTHLY_LIMIT is not set")
+    di["AI_QUOTA_MONTHLY_LIMIT"] = int(ai_quota_monthly_limit)
+
     di[UserService] = UserService()
     di[GoogleOAuthService] = GoogleOAuthService()
     di[AuthService] = AuthService()

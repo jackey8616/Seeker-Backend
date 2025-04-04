@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+from kink import di
+
 from models.user.user import ModelUser
 from services.ai.quota import QuotaStrategy
 from services.ai.quota.basic_strategies.daily_quota import DailyQuotaStrategy
@@ -14,8 +16,8 @@ class AiQuotaStrategyExaminator(QuotaExaminator):
     name: str = "ai"
     strategies: list[QuotaStrategy] = field(
         default_factory=lambda: [
-            HourlyQuotaStrategy(hourly_limit=2),
-            DailyQuotaStrategy(daily_limit=5),
-            MonthlyQuotaStrategy(monthly_limit=15),
+            HourlyQuotaStrategy(hourly_limit=di["AI_QUOTA_HOURLY_LIMIT"]),
+            DailyQuotaStrategy(daily_limit=di["AI_QUOTA_DAILY_LIMIT"]),
+            MonthlyQuotaStrategy(monthly_limit=di["AI_QUOTA_MONTHLY_LIMIT"]),
         ],
     )
