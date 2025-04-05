@@ -5,9 +5,11 @@ from urllib.parse import urlparse
 from kink import di
 
 from dtos.auth.auth_dtos import TokenData
+from dtos.google.oauth_dtos import GoogleCredentials, GoogleUserInfo
+from models.user.user import ModelUser
+from repository.user import UserRepository
 from services.auth.jwt import JwtService
 from services.google.oauth import GoogleOAuthService
-from services.user import UserService
 from utils.time import time_diff_in_seconds
 
 
@@ -16,8 +18,8 @@ class AuthService:
     _google_oauth_service: GoogleOAuthService = field(
         default_factory=lambda: di[GoogleOAuthService]
     )
-    _user_service: UserService = field(default_factory=lambda: di[UserService])
     _jwt_service: JwtService = field(default_factory=lambda: JwtService())
+    _user_repository: UserRepository = field(default_factory=lambda: UserRepository())
 
     def oauth_login(self, code: str, redirect_uri: str) -> tuple[str, str, datetime]:
         (oauth_credentials, credentials) = (
@@ -29,15 +31,15 @@ class AuthService:
             credentials=oauth_credentials
         )
 
-        user = self._user_service.get_by_google_id(google_id=userinfo.id)
+        user = self._user_repository.get_by_google_id(google_id=userinfo.id)
         if user is None:
-            user = self._user_service.create_new_user_through_oauth(
+            user = self._create_new_user_through_oauth(
                 userinfo=userinfo,
                 credentials=credentials,
             )
         else:
             user.google_credentials = credentials
-            self._user_service.update(user=user)
+            self._user_repository.update(obj=user)
 
         assert user.id is not None
         payload = TokenData(sub=user.id)
@@ -76,3 +78,13 @@ class AuthService:
             "domain": urlparse(di["SERVE_DOMAIN"]).hostname,
             "max_age": time_diff_in_seconds(datetime.now(), refresh_token_expiration),
         }
+
+    def _create_new_user_through_oauth(
+        self, userinfo: GoogleUserInfo, credentials: GoogleCredentials
+    ) -> ModelUser:
+        return self._user_repository.insert_one(
+            obj=ModelUser(
+                google_userinfo=userinfo,
+                google_credentials=credentials,
+            )
+        )

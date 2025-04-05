@@ -10,15 +10,15 @@ from kink import di
 
 from dtos.google.oauth_dtos import GoogleCredentials, GoogleUserInfo
 from models.user.user import ModelUser
+from repository.user import UserRepository
 from services.google.oauth.exceptions import OAuthExpiredError, OAuthScopeChangedError
 from services.google.oauth.transformer import GoogleCredentialsTransformer
-from services.user import UserService
 from utils.typings import GoogleOAuthCredentials
 
 
 @dataclass
 class GoogleOAuthService:
-    _user_service: UserService = field(default_factory=lambda: di[UserService])
+    _user_repository: UserRepository = field(default_factory=lambda: UserRepository())
     _credential_json_path: str = field(
         default_factory=lambda: di["GOOGLE_OAUTH_CLIENT_CREDENTIALS_PATH"], repr=False
     )
@@ -89,7 +89,7 @@ class GoogleOAuthService:
             user.google_credentials = GoogleCredentialsTransformer().transform(
                 data=credentials
             )
-            self._user_service.update(user=user)
+            self._user_repository.update(obj=user)
         except OAuthError as e:
             raise OAuthExpiredError(
                 "Google OAuth credentials have expired. Please re-authenticate."
@@ -111,7 +111,7 @@ class GoogleOAuthService:
         )
 
     def get_oauth_credentials(self, user_id: str) -> GoogleOAuthCredentials:
-        user = self._user_service.get_by_id(user_id=user_id)
+        user = self._user_repository.get_by_id(id=user_id)
         if user is None:
             raise ValueError(f"Could not find user with id: {user_id}")
         elif user.google_credentials is None:

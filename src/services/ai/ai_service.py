@@ -10,9 +10,9 @@ from models.user.execution_count import ModelExecutionCount
 from models.user.user import ModelUser
 from repository.ai_chat_log import AiChatLogRepository
 from repository.ai_conversation_log import AiConversationLogRepository
+from repository.user import UserRepository
 from services.google.vertex import GoogleVertexService
 from services.quota.examinator.ai_quota import AiQuotaStrategyExaminator
-from services.user import UserService
 
 
 @dataclass
@@ -20,6 +20,7 @@ class AiService:
     _maximum_ai_chat_record_limit: int = field(
         default_factory=lambda: di["MAXIMUM_AI_CHAT_RECORD_LIMIT"]
     )
+    _user_repository: UserRepository = field(default_factory=lambda: UserRepository())
     _chat_log_repository: AiChatLogRepository = field(
         default_factory=lambda: AiChatLogRepository()
     )
@@ -33,7 +34,7 @@ class AiService:
         model_name: str,
         system_instructions: list[str],
     ) -> str:
-        executor = UserService().get_by_id(user_id=executor_id)
+        executor = self._user_repository.get_by_id(id=executor_id)
         if executor is None:
             raise ValueError("Executor not found")
 
@@ -70,7 +71,7 @@ class AiService:
         system_instructions: Optional[list[str]] = None,
         with_history: bool = True,
     ) -> ModelAiChatLog:
-        executor = UserService().get_by_id(user_id=executor_id)
+        executor = self._user_repository.get_by_id(id=executor_id)
         if executor is None:
             raise ValueError("Executor not found")
 
@@ -151,4 +152,4 @@ class AiService:
         execution_count.remaining_quotas["ai"] = strategy_examinator.get_quotas()
 
         executor.execution_count = execution_count
-        UserService().update(executor)
+        self._user_repository.update(executor)
