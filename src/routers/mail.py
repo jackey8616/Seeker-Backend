@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
+from dtos.auth.auth_dtos import TokenData
 from request.mail.list_mails import ListMailsRequestDto
 from responses.mail.get_mail import GetMailResponseDto
 from responses.mail.list_mails import ListMailInfosResponseDto
 from services.auth.auth_bearer import JwtBearer
-from services.auth.dtos.token import TokenData
 from services.google.mail import GoogleMailService
 from services.google.oauth import GoogleOAuthService
 from services.mail.transformers import MailTransformer

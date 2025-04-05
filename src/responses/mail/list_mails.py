@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from dtos.mail.mail_dtos import MailInfo
 from responses.api_response import ApiResponseDto
-from services.mail.dtos.main_info import MailInfo
 
 
 @dataclass

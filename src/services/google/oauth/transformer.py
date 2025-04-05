@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import cast
 
-from services.google.oauth.dtos.google_credentials import GoogleCredentials
+from dtos.google.oauth_dtos import GoogleCredentials
 from utils.typings import GoogleOAuthCredentials
 
 

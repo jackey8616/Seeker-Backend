@@ -1,7 +1,7 @@
 from email.utils import parsedate_to_datetime
 
-from services.google.mail.dtos import GmailThread
-from services.mail.dtos import Mail
+from dtos.google.mail_dtos import GmailThread
+from dtos.mail.mail_dtos import Mail
 
 
 class MailTransformer:

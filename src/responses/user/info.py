@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from dtos.auth.auth_dtos import Userinfo
 from responses.api_response import ApiResponseDto
-from services.auth.dtos.userinfo import Userinfo
 
 
 @dataclass

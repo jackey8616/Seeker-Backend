@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
+from dtos.auth.auth_dtos import TokenData
 from request.job.crawl_job import CrawlJobRequestDto
 from request.job.get_jobs import GetJobsRequestDto
 from request.job.job_fitting_ai_by_url import JobFittingAiByUrlRequestDto
@@ -10,7 +11,6 @@ from responses.job.fitting_ai_by_url import JobFittingAiByUrlResponseDto
 from responses.job.get_job import GetJobResponseDto
 from responses.job.get_jobs import GetJobsResponseDto
 from services.auth.auth_bearer import JwtBearer
-from services.auth.dtos.token import TokenData
 from services.job import JobService
 from services.pipeline.flow.seek_au.match_resume_and_job_description import (
     MatchResumeAndJobDescriptionDataType,

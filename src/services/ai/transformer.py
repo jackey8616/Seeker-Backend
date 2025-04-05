@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
+from dtos.ai.ai_chat_log_dto import AiChatLogDto
 from models.ai.ai_chat_log import ModelAiChatLog
-from services.ai.dtos.ai_chat_log_dto import AiChatLogDto
 
 
 @dataclass

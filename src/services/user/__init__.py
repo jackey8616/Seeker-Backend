@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
+from dtos.auth.auth_dtos import Userinfo
+from dtos.google.oauth_dtos import GoogleCredentials, GoogleUserInfo
 from models.user.user import ModelUser
 from repository.user import UserRepository
-from services.auth.dtos.userinfo import Userinfo
-from services.google.oauth.dtos.google_credentials import GoogleCredentials
-from services.google.oauth.dtos.google_user_info import GoogleUserInfo
 from services.quota.examinator.ai_quota import AiQuotaStrategyExaminator
 
 

@@ -8,9 +8,8 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from kink import di
 
+from dtos.google.oauth_dtos import GoogleCredentials, GoogleUserInfo
 from models.user.user import ModelUser
-from services.google.oauth.dtos.google_credentials import GoogleCredentials
-from services.google.oauth.dtos.google_user_info import GoogleUserInfo
 from services.google.oauth.exceptions import OAuthExpiredError, OAuthScopeChangedError
 from services.google.oauth.transformer import GoogleCredentialsTransformer
 from services.user import UserService

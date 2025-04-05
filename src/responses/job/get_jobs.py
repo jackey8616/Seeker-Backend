@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
+from dtos.job.job_dtos import JobDto
 from repository.cursor import Cursor
 from responses.api_response import ApiResponseDto
-from services.job.dtos.job_dto import JobDto
 
 
 @dataclass

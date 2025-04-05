@@ -6,8 +6,8 @@ from typing import Optional
 from bs4 import BeautifulSoup, Tag
 from requests import get
 
+from dtos.job.crawler_dtos import CrawledCompany, CrawledJob
 from services.job.crawler import Crawler
-from services.job.crawler.dtos import CrawledCompany, CrawledJob
 
 
 @dataclass

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from dtos.ai.ai_conversation_log import AiConversationLog
 from responses.api_response import ApiResponseDto
-from services.ai.dtos.ai_conversation_log import AiConversationLog
 
 
 @dataclass

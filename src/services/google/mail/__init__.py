@@ -4,7 +4,7 @@ from typing import Optional
 
 from googleapiclient.discovery import build
 
-from services.google.mail.dtos import GmailLabel, GmailThread, GmailThreadInfo
+from dtos.google.mail_dtos import GmailLabel, GmailThread, GmailThreadInfo
 from utils.typings import GoogleOAuthCredentials
 
 

@@ -1,6 +1,11 @@
 from datetime import datetime
 
-from services.mail.dtos.main_info import MailInfo
+from pydantic import BaseModel
+
+
+class MailInfo(BaseModel):
+    id: str
+    snippet: str
 
 
 class Mail(MailInfo):

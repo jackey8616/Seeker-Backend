@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
-from services.job.crawler.dtos import CrawledJob
+from dtos.job.crawler_dtos import CrawledJob
 
 
 @dataclass

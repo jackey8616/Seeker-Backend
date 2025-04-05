@@ -4,8 +4,8 @@ from json import loads
 from bs4 import BeautifulSoup
 from requests import get
 
+from dtos.job.crawler_dtos import CrawledCompany, CrawledJob
 from services.job.crawler import Crawler
-from services.job.crawler.dtos import CrawledCompany, CrawledJob
 
 
 @dataclass

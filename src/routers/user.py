@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from kink import di
 
+from dtos.auth.auth_dtos import TokenData
 from responses.user.info import GetUserInfoResponseDto
 from services.auth.auth_bearer import JwtBearer
-from services.auth.dtos.token import TokenData
 from services.user import UserService
 
 users_router = APIRouter(

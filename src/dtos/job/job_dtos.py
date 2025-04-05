@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 from pydantic import BaseModel, Field
 
+from dtos.ai.ai_chat_log_dto import AiChatLogDto
 from models.job.company import ModelCompany
-from services.ai.dtos.ai_chat_log_dto import AiChatLogDto
 
 
 class JobDto(BaseModel):

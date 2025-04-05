@@ -1,5 +1,5 @@
-from services.google.mail.dtos import GmailThreadInfo
-from services.mail.dtos.main_info import MailInfo
+from dtos.google.mail_dtos import GmailThreadInfo
+from dtos.mail.mail_dtos import MailInfo
 
 
 class MailInfoTransformer:

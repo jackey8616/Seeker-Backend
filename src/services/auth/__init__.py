@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 from kink import di
 
-from services.auth.dtos.token import TokenData
+from dtos.auth.auth_dtos import TokenData
 from services.auth.jwt import JwtService
 from services.google.oauth import GoogleOAuthService
 from services.user import UserService

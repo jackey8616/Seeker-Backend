@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
+from dtos.job.job_dtos import JobDto
 from models.ai.ai_chat_log import ModelAiChatLog
 from models.job.job import ModelJob
 from services.ai.transformer import AiChatLogDtoTransformer
-from services.job.dtos.job_dto import JobDto
 
 
 @dataclass

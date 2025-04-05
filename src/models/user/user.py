@@ -1,9 +1,8 @@
 from typing import Optional
 
+from dtos.google.oauth_dtos import GoogleCredentials, GoogleUserInfo
 from models import MongoDocument
 from models.user.execution_count import ModelExecutionCount
-from services.google.oauth.dtos.google_credentials import GoogleCredentials
-from services.google.oauth.dtos.google_user_info import GoogleUserInfo
 
 
 class ModelUser(MongoDocument):
